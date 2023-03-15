@@ -1,0 +1,16 @@
+{
+    "name": "Mochineko.Result.Experimental",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3ed995982eec04b2e9d304b5b6242945"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
