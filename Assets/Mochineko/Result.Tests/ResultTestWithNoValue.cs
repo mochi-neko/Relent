@@ -95,7 +95,7 @@ namespace Mochineko.Result.Tests
             }
             else
             {
-                throw new Exception();
+                throw new ResultPatternMatchException(nameof(result));
             }
         }
     }

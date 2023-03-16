@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 namespace Mochineko.HttpResult.Samples
 {
     [TestFixture]
-    internal class UserDefinesResultSample
+    internal class UserDefinedHttpResultSample
     {
         [Test]
         [RequiresPlayMode(false)]
@@ -34,7 +34,7 @@ namespace Mochineko.HttpResult.Samples
             }
             else
             {
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
         

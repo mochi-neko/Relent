@@ -125,7 +125,7 @@ namespace Mochineko.HttpResult.Tests
             }
             else
             {
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
 
@@ -153,7 +153,7 @@ namespace Mochineko.HttpResult.Tests
             }
             else
             {
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
 
@@ -181,7 +181,7 @@ namespace Mochineko.HttpResult.Tests
             }
             else
             {
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
     }

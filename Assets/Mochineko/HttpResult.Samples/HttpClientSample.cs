@@ -39,7 +39,7 @@ namespace Mochineko.HttpResult.Samples
             else
             {
                 // Unexpected
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
 
@@ -70,7 +70,7 @@ namespace Mochineko.HttpResult.Samples
             else
             {
                 // Unexpected
-                throw new Exception();
+                throw new HttpResultPatternMatchException(nameof(result));
             }
         }
         
@@ -112,7 +112,7 @@ namespace Mochineko.HttpResult.Samples
                 else
                 {
                     // Unexpected
-                    throw new Exception();
+                    throw new HttpResultPatternMatchException(nameof(result));
                 }
             }
             
