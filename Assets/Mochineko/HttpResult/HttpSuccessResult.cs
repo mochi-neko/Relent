@@ -1,28 +1,24 @@
 #nullable enable
-using System.Net;
-
 namespace Mochineko.HttpResult
 {
     internal sealed class HttpSuccessResult
         : IHttpSuccessResult
     {
-        public HttpStatusCode StatusCode { get; }
-        
-        public HttpSuccessResult(HttpStatusCode statusCode)
-        {
-            StatusCode = statusCode;
-        }
+        public bool Success => true;
+        public bool Retryable => false;
+        public bool Failure => false;
     }
     
     internal sealed class HttpSuccessResult<TResult>
         : IHttpSuccessResult<TResult>
     {
-        public HttpStatusCode StatusCode { get; }
+        public bool Success => true;
+        public bool Retryable => false;
+        public bool Failure => false;
         public TResult Result { get; }
         
-        public HttpSuccessResult(HttpStatusCode statusCode, TResult result)
+        public HttpSuccessResult(TResult result)
         {
-            StatusCode = statusCode;
             Result = result;
         }
     }

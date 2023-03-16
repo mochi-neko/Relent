@@ -1,15 +1,18 @@
 #nullable enable
-using System.Net;
 
 namespace Mochineko.HttpResult
 {
     public interface IHttpResult
     {
-        HttpStatusCode StatusCode { get; }
+        bool Success { get; }
+        bool Retryable { get; }
+        bool Failure { get; }
     }
     
     public interface IHttpResult<TResult>
     {
-        HttpStatusCode StatusCode { get; }
+        bool Success { get; }
+        bool Retryable { get; }
+        bool Failure { get; }
     }
 }

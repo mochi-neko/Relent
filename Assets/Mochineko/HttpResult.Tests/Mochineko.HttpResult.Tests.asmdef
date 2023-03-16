@@ -7,7 +7,9 @@
         "GUID:e372c541aba5148868e12aa078ca7c20",
         "GUID:2620e54ab6edb48f48d55966fd5662fb"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -19,5 +21,5 @@
         "UNITY_INCLUDE_TESTS"
     ],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

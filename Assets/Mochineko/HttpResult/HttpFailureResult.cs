@@ -1,34 +1,31 @@
 #nullable enable
-using System;
-using System.Net;
-
 namespace Mochineko.HttpResult
 {
-    internal sealed class HttpFailureResult<TReason>
-        : IHttpFailureResult<TReason>
-        where TReason : Exception
+    internal sealed class HttpFailureResult
+        : IHttpFailureResult
     {
-        public HttpStatusCode StatusCode { get; }
-        public TReason Reason { get; }
-        
-        public HttpFailureResult(HttpStatusCode statusCode, TReason reason)
+        public bool Success => false;
+        public bool Retryable => false;
+        public bool Failure => true;
+        public string Message { get; }
+
+        public HttpFailureResult(string message)
         {
-            StatusCode = statusCode;
-            Reason = reason;
+            Message = message;
         }
     }
     
-    internal sealed class HttpFailureResult<TResult, TReason>
-        : IHttpFailureResult<TResult, TReason>
-        where TReason : Exception
+    internal sealed class HttpFailureResult<TResult>
+        : IHttpFailureResult<TResult>
     {
-        public HttpStatusCode StatusCode { get; }
-        public TReason Reason { get; }
-        
-        public HttpFailureResult(HttpStatusCode statusCode, TReason reason)
+        public bool Success => false;
+        public bool Retryable => false;
+        public bool Failure => true;
+        public string Message { get; }
+
+        public HttpFailureResult(string message)
         {
-            StatusCode = statusCode;
-            Reason = reason;
+            Message = message;
         }
     }
 }

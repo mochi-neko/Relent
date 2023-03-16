@@ -1,19 +1,16 @@
 #nullable enable
-using System;
 
 namespace Mochineko.HttpResult
 {
-    public interface IHttpRetryableResult<out TReason>
+    public interface IHttpRetryableResult
         : IHttpResult
-        where TReason : Exception
     {
-        TReason Reason { get; }
+        string Message { get; }
     }
     
-    public interface IHttpRetryableResult<TResult, out TReason>
+    public interface IHttpRetryableResult<TResult>
         : IHttpResult<TResult>
-        where TReason : Exception
     {
-        TReason Reason { get; }
+        string Message { get; }
     }
 }
