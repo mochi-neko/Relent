@@ -7,14 +7,14 @@ namespace Mochineko.HttpResult
     public static class HttpResult
     {
         /// <summary>
-        /// Creates a <see cref="IHttpSuccessResult"/> without value.
+        /// Creates a <see cref="IHttpSuccessResult"/>.
         /// </summary>
         /// <returns></returns>
         public static IHttpSuccessResult Succeed()
             => new HttpSuccessResult();
         
         /// <summary>
-        /// Creates a <see cref="IHttpRetryableResult"/> with message.
+        /// Creates a <see cref="IHttpRetryableResult"/> with a message.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -22,7 +22,7 @@ namespace Mochineko.HttpResult
             => new HttpRetryableResult(message);
         
         /// <summary>
-        /// Creates a <see cref="IHttpFailureResult"/> with message.
+        /// Creates a <see cref="IHttpFailureResult"/> with a message.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -30,7 +30,7 @@ namespace Mochineko.HttpResult
             => new HttpFailureResult(message);
         
         /// <summary>
-        /// Creates a <see cref="IHttpSuccessResult{TResult}"/> with value.
+        /// Creates a <see cref="IHttpSuccessResult{TResult}"/> with a value.
         /// </summary>
         /// <param name="result"></param>
         /// <typeparam name="TResult">Type of result value</typeparam>
@@ -39,7 +39,7 @@ namespace Mochineko.HttpResult
             => new HttpSuccessResult<TResult>(result);
 
         /// <summary>
-        /// Creates a <see cref="IHttpRetryableResult{TResult}"/> with message.
+        /// Creates a <see cref="IHttpRetryableResult{TResult}"/> with a message.
         /// </summary>
         /// <param name="message"></param>
         /// <typeparam name="TResult">Type of result value</typeparam>
@@ -48,7 +48,7 @@ namespace Mochineko.HttpResult
             => new HttpRetryableResult<TResult>(message);
 
         /// <summary>
-        /// Creates a <see cref="IHttpFailureResult{TResult}"/> with message
+        /// Creates a <see cref="IHttpFailureResult{TResult}"/> with a message.
         /// </summary>
         /// <param name="message"></param>
         /// <typeparam name="TResult">Type of result value</typeparam>

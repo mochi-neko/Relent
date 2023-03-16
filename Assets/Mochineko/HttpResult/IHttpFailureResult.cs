@@ -2,7 +2,7 @@
 namespace Mochineko.HttpResult
 {
     /// <summary>
-    /// Defines a failure result of HTTP communication with message.
+    /// Defines a failure result of HTTP communication with a message.
     /// </summary>
     public interface IHttpFailureResult
         : IHttpResult
@@ -11,7 +11,7 @@ namespace Mochineko.HttpResult
     }
 
     /// <summary>
-    /// Defines a failure result of HTTP communication with message.
+    /// Defines a failure result of HTTP communication with a message.
     /// </summary>
     /// <typeparam name="TResult">Type of result value</typeparam>
     public interface IHttpFailureResult<TResult>
