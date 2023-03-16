@@ -54,7 +54,7 @@ namespace Mochineko.Result.Samples
         {
             if (integer % 2 == 0)
             {
-                return Result.Ok<int>(integer / 2);
+                return Result.Succeed<int>(integer / 2);
             }
             else
             {

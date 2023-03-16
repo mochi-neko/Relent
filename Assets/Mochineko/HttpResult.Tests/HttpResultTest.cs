@@ -13,7 +13,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void SuccessTest()
         {
-            var result = HttpResult.Ok("Test");
+            IHttpResult<string> result = HttpResult.Succeed("Test");
 
             result.Success.Should().BeTrue();
             result.Retryable.Should().BeFalse();
@@ -24,7 +24,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryTest()
         {
-            var result = HttpResult.Retry<string>("Test");
+            IHttpResult<string> result = HttpResult.Retry<string>("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeTrue();
@@ -35,7 +35,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void FailureTest()
         {
-            var result = HttpResult.Fail<string>("Test");
+            IHttpResult<string> result = HttpResult.Fail<string>("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeFalse();
@@ -46,7 +46,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathTest()
         {
-            var result = HttpResult.Ok("Test");
+            IHttpResult<string> result = HttpResult.Succeed("Test");
 
             if (result.Success)
             {
@@ -66,7 +66,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathTest()
         {
-            var result = HttpResult.Retry<string>("Test");
+            IHttpResult<string> result = HttpResult.Retry<string>("Test");
 
             if (result.Success)
             {
@@ -86,7 +86,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathTest()
         {
-            var result = HttpResult.Fail<string>("Test");
+            IHttpResult<string> result = HttpResult.Fail<string>("Test");
 
             if (result.Success)
             {
@@ -106,7 +106,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathByPatternMatchingTest()
         {
-            var result = HttpResult.Ok<string>("Test");
+            IHttpResult<string> result = HttpResult.Succeed<string>("Test");
 
             if (result is IHttpSuccessResult<string> success)
             {
@@ -134,7 +134,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathByPatternMatchingTest()
         {
-            var result = HttpResult.Retry<string>("Test");
+            IHttpResult<string> result = HttpResult.Retry<string>("Test");
 
             if (result is IHttpSuccessResult<string> success)
             {
@@ -162,7 +162,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathByPatternMatchingTest()
         {
-            var result = HttpResult.Fail<string>("Test");
+            IHttpResult<string> result = HttpResult.Fail<string>("Test");
 
             if (result is IHttpSuccessResult<string> success)
             {

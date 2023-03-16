@@ -83,7 +83,7 @@ namespace Mochineko.HttpResult.Samples
                             $"Failed because response text was null.");
                     }
 
-                    return HttpResult.Ok(responseText);
+                    return HttpResult.Succeed(responseText);
                 }
                 // Retryable
                 else if (responseMessage.StatusCode is HttpStatusCode.TooManyRequests
