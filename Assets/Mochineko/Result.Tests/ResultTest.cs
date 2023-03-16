@@ -7,13 +7,13 @@ using UnityEngine.TestTools;
 namespace Mochineko.Result.Tests
 {
     [TestFixture]
-    internal sealed class ResultWithDataTest
+    internal sealed class ResultTest
     {
         [Test]
         [RequiresPlayMode(false)]
         public void SuccessTest()
         {
-            var result = Result.Ok(true);
+            var result = Result.Ok(1);
 
             result.Success.Should().BeTrue();
             result.Failure.Should().BeFalse();
@@ -23,7 +23,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void FailureTest()
         {
-            var result = Result.Fail<bool>("Test");
+            var result = Result.Fail<int>("Test");
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
@@ -33,7 +33,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void HappyPathTest()
         {
-            var result = Result.Ok(true);
+            var result = Result.Ok(1);
 
             if (result.Success)
             {
@@ -49,7 +49,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathTest()
         {
-            var result = Result.Fail<bool>("Test");
+            var result = Result.Fail<int>("Test");
 
             if (result.Success)
             {
@@ -65,13 +65,13 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void HappyPathByPatternMatchingTest()
         {
-            var result = Result.Ok(true);
+            var result = Result.Ok(1);
 
-            if (result is ISuccessResult<bool> success)
+            if (result is ISuccessResult<int> success)
             {
                 // Pass
                 success.Should().NotBeNull();
-                success.Result.Should().BeTrue();
+                success.Result.Should().Be(1);
             }
             else
             {
@@ -83,13 +83,13 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathByPatternMatchingTest()
         {
-            var result = Result.Fail<bool>("Test");
+            var result = Result.Fail<int>("Test");
 
-            if (result is ISuccessResult<bool>)
+            if (result is ISuccessResult<int>)
             {
                 throw new Exception();
             }
-            else if (result is IFailureResult<bool> failure)
+            else if (result is IFailureResult<int> failure)
             {
                 // Pass
                 failure.Message.Should().Be("Test");
@@ -98,25 +98,6 @@ namespace Mochineko.Result.Tests
             {
                 throw new Exception();
             }
-        }
-        
-        [Test]
-        [RequiresPlayMode(false)]
-        public void UnwrapSuccessResultTest()
-        {
-            var result = Result.Ok(true);
-
-            result.Unwrap().Should().BeTrue();
-        }
-        
-        [Test]
-        [RequiresPlayMode(false)]
-        public void FailedToUnwrapFailureResultTest()
-        {
-            var result = Result.Fail<bool>("Test");
-            Func<bool> unwrap = () => result.Unwrap();
-
-            unwrap.Should().Throw<FailedToUnwrapResultException>();
         }
     }
 }

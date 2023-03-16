@@ -2,21 +2,6 @@
 
 namespace Mochineko.Result.Experimental
 {
-    internal sealed class ChainedFailureResult
-        : IChainedFailureResult
-    {
-        public bool Success => false;
-        public bool Failure => true;
-        public string Message { get; }
-        public IFailureResult Inner { get; }
-
-        public ChainedFailureResult(string message, IFailureResult parent)
-        {
-            Message = message;
-            Inner = parent;
-        }
-    }
-    
     internal sealed class ChainedFailureResult<TResult>
         : IChainedFailureResult<TResult>
     {
