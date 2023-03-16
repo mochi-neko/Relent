@@ -66,8 +66,7 @@ namespace Mochineko.HttpResult.Samples
                     return HttpResult.Fail<string>(
                         $"Failed because {nameof(HttpResponseMessage)} was null.");
                 }
-
-                // OK
+                
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     if (responseMessage.Content == null)
@@ -83,6 +82,7 @@ namespace Mochineko.HttpResult.Samples
                             $"Failed because response text was null.");
                     }
 
+                    // Success
                     return HttpResult.Succeed(responseText);
                 }
                 // Retryable
