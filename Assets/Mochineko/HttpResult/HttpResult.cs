@@ -2,10 +2,33 @@
 namespace Mochineko.HttpResult
 {
     /// <summary>
-    /// A factory of <see cref="IHttpResult{TResult}"/>.
+    /// A factory of <see cref="IHttpResult"/> and <see cref="IHttpResult{TResult}"/>.
     /// </summary>
     public static class HttpResult
     {
+        /// <summary>
+        /// Creates a <see cref="IHttpSuccessResult"/> without value.
+        /// </summary>
+        /// <returns></returns>
+        public static IHttpSuccessResult Succeed()
+            => new HttpSuccessResult();
+        
+        /// <summary>
+        /// Creates a <see cref="IHttpRetryableResult"/> with message.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static IHttpRetryableResult Retry(string message)
+            => new HttpRetryableResult(message);
+        
+        /// <summary>
+        /// Creates a <see cref="IHttpFailureResult"/> with message.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static IHttpFailureResult Fail(string message)
+            => new HttpFailureResult(message);
+        
         /// <summary>
         /// Creates a <see cref="IHttpSuccessResult{TResult}"/> with value.
         /// </summary>

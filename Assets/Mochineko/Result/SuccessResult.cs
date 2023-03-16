@@ -1,6 +1,13 @@
 #nullable enable
 namespace Mochineko.Result
 {
+    internal sealed class SuccessResult
+        : ISuccessResult
+    {
+        public bool Success => true;
+        public bool Failure => false;
+    }
+    
     internal sealed class SuccessResult<TResult>
         : ISuccessResult<TResult>
     {

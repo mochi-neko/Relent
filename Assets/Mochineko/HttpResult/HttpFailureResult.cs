@@ -1,6 +1,20 @@
 #nullable enable
 namespace Mochineko.HttpResult
 {
+    internal sealed class HttpFailureResult
+        : IHttpFailureResult
+    {
+        public bool Success => false;
+        public bool Retryable => false;
+        public bool Failure => true;
+        public string Message { get; }
+
+        public HttpFailureResult(string message)
+        {
+            Message = message;
+        }
+    }
+    
     internal sealed class HttpFailureResult<TResult>
         : IHttpFailureResult<TResult>
     {

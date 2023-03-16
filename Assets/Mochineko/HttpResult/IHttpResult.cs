@@ -3,6 +3,16 @@ namespace Mochineko.HttpResult
 {
     /// <summary>
     /// Defines a result of HTTP communication.
+    /// </summary>
+    public interface IHttpResult
+    {
+        bool Success { get; }
+        bool Retryable { get; }
+        bool Failure { get; }
+    }
+    
+    /// <summary>
+    /// Defines a result of HTTP communication.
     /// The type argument may seem to do nothing,
     ///  but prevents cast to wrong types.
     /// </summary>

@@ -1,27 +1,30 @@
 #nullable enable
 namespace Mochineko.Result
 {
-    /// <summary>
-    /// A factory of <see cref="IResult{TResult}"/>.
-    /// </summary>
     public static class Result
     {
-        /// <summary>
-        /// Creates a <see cref="ISuccessResult{TResult}"/> with value.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <typeparam name="TResult">Type of result value</typeparam>
-        /// <returns></returns>
-        public static ISuccessResult<TResult> Succeed<TResult>(TResult result)
+        public static IResult Ok()
+            => new SuccessResult();
+        
+        public static IResult Fail(string message)
+            => new FailureResult(message);
+
+        public static IResult<TResult> Ok<TResult>(TResult result)
             => new SuccessResult<TResult>(result);
 
-        /// <summary>
-        /// Creates a <see cref="IFailureResult{TResult}"/> with message.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <typeparam name="TResult">Type of result value</typeparam>
-        /// <returns></returns>
-        public static IFailureResult<TResult> Fail<TResult>(string message)
+        public static IResult<TResult> Fail<TResult>(string message)
             => new FailureResult<TResult>(message);
+
+        public static TResult Unwrap<TResult>(this IResult<TResult> result)
+        {
+            if (result is ISuccessResult<TResult> success)
+            {
+                return success.Result;
+            }
+            else
+            {
+                throw new FailedToUnwrapResultException($"Failed to unwrap {result.GetType()} into success result.");
+            }
+        }
     }
 }

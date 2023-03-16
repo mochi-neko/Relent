@@ -4,6 +4,15 @@ namespace Mochineko.HttpResult
     /// <summary>
     /// Defines a retryable result of HTTP communication with message.
     /// </summary>
+    public interface IHttpRetryableResult
+        : IHttpResult
+    {
+        string Message { get; }
+    }
+    
+    /// <summary>
+    /// Defines a retryable result of HTTP communication with message.
+    /// </summary>
     /// <typeparam name="TResult">Type of result value</typeparam>
     public interface IHttpRetryableResult<TResult>
         : IHttpResult<TResult>
