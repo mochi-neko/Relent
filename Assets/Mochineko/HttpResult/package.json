@@ -1,0 +1,11 @@
+{
+  "name": "com.mochineko.http-result",
+  "version": "0.1.0",
+  "displayName": "HTTP Result",
+  "description": "Provides a functional result and error handling for HTTP communication.",
+  "unity": "2021.3",
+  "author": {
+    "name": "Mochineko",
+    "email": "t.o.e.4315@gmail.com"
+  }
+}
