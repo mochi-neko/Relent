@@ -1,10 +1,9 @@
-
 using System;
 using FluentAssertions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Mochineko.Result.Samples
+namespace Mochineko.Result.Tests
 {
     [TestFixture]
     internal class ResultSample

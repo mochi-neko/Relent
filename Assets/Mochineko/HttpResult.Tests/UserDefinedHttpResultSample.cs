@@ -4,10 +4,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Mochineko.HttpResult.Samples
+namespace Mochineko.HttpResult.Tests
 {
     [TestFixture]
-    internal class UserDefinedHttpResultSample
+    internal sealed class UserDefinedHttpResultSample
     {
         [Test]
         [RequiresPlayMode(false)]
