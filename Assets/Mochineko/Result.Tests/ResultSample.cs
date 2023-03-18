@@ -53,11 +53,11 @@ namespace Mochineko.Result.Tests
         {
             if (integer % 2 == 0)
             {
-                return Result.Succeed<int>(integer / 2);
+                return ResultFactory.Succeed<int>(integer / 2);
             }
             else
             {
-                return Result.Fail<int>($"{integer} is not even.");
+                return ResultFactory.Fail<int>($"{integer} is not even.");
             }
         }
     }

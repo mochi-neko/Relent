@@ -28,8 +28,8 @@ namespace Mochineko.Result.Experimental
         {
             return result switch
             {
-                ISuccessResult => Result.Fail($"Result type:{result.GetType()} is not failure."),
-                IFailureResultWithError<TError> => Result.Succeed(),
+                ISuccessResult => ResultFactory.Fail($"Result type:{result.GetType()} is not failure."),
+                IFailureResultWithError<TError> => ResultFactory.Succeed(),
                 _ => MissingTypePatternMatchResult(result)
             };
         }
@@ -38,13 +38,13 @@ namespace Mochineko.Result.Experimental
         {
             return result switch
             {
-                ISuccessResult => Result.Fail($"Result type:{result.GetType()} is not failure."),
-                IChainedFailureResult => Result.Succeed(),
+                ISuccessResult => ResultFactory.Fail($"Result type:{result.GetType()} is not failure."),
+                IChainedFailureResult => ResultFactory.Succeed(),
                 _ => MissingTypePatternMatchResult(result)
             };
         }
 
         private static IResult MissingTypePatternMatchResult(IResult result)
-            => Result.Fail($"Missing match type for result type:{result.GetType()}.");
+            => ResultFactory.Fail($"Missing match type for result type:{result.GetType()}.");
     }
 }

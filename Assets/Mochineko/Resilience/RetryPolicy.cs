@@ -16,19 +16,19 @@ namespace Mochineko.Resilience
         public RetryPolicy(int permittedRetryCount)
         {
             this.permittedRetryCount = permittedRetryCount;
-            this.waitDurationProvider = retryAttempt => TimeSpan.Zero;
+            waitDurationProvider = retryAttempt => TimeSpan.Zero;
         }
-        
+
         public RetryPolicy(int permittedRetryCount, TimeSpan duration)
         {
             this.permittedRetryCount = permittedRetryCount;
-            this.waitDurationProvider = retryAttempt => duration;
+            waitDurationProvider = retryAttempt => duration;
         }
-        
+
         public RetryPolicy(int permittedRetryCount, Func<int, TimeSpan> durationProvider)
         {
             this.permittedRetryCount = permittedRetryCount;
-            this.waitDurationProvider = durationProvider ?? throw new ArgumentNullException(nameof(durationProvider));
+            waitDurationProvider = durationProvider ?? throw new ArgumentNullException(nameof(durationProvider));
         }
 
         public async Task<IResult<TResult>> ExecuteAsync(
@@ -42,31 +42,22 @@ namespace Mochineko.Resilience
                 var result = await execute.Invoke(cancellationToken);
                 if (result is IUncertainSuccessResult<TResult> success)
                 {
-                    return global::Mochineko.Result.Result.Succeed(success.Result);
+                    return ResultFactory.Succeed(success.Result);
                 }
                 else if (result is IUncertainRetryableResult<TResult> retryable)
                 {
                     retryCount++;
 
-                    try
+                    var waitResult = await CertainWait
+                        .Wait(waitDurationProvider.Invoke(retryCount), cancellationToken);
+                    if (waitResult is IFailureResult cancelled)
                     {
-                        await Task.Delay(waitDurationProvider.Invoke(retryCount), cancellationToken);
-                    }
-                    catch (OperationCanceledException exception)
-                    {
-                        return global::Mochineko.Result.Result.Fail<TResult>(
-                            $"Failed to retry because operation was cancelled with exception:{exception}.");
-                    }
-                    catch (Exception exception)
-                    {
-                        // Unexpected
-                        return global::Mochineko.Result.Result.Fail<TResult>(
-                            $"Failed to retry because operation was failed by unhandled exception:{exception}.");
+                        return ResultFactory.Fail<TResult>(cancelled.Message);
                     }
                 }
                 else if (result is IUncertainFailureResult<TResult> failure)
                 {
-                    return global::Mochineko.Result.Result.Fail<TResult>(failure.Message);
+                    return ResultFactory.Fail<TResult>(failure.Message);
                 }
                 else
                 {
@@ -74,9 +65,9 @@ namespace Mochineko.Resilience
                     throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
-            
+
             // Over permitted retry count
-            return global::Mochineko.Result.Result.Fail<TResult>(
+            return ResultFactory.Fail<TResult>(
                 "Failed to retry because retry count was over permitted count.");
         }
     }

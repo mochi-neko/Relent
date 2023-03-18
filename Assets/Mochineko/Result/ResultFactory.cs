@@ -4,7 +4,7 @@ namespace Mochineko.Result
     /// <summary>
     /// A factory of <see cref="IResult"/> and <see cref="IResult{TResult}"/>.
     /// </summary>
-    public static class Result
+    public static class ResultFactory
     {
         /// <summary>
         /// Creates a <see cref="ISuccessResult"/>.

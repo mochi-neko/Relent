@@ -3,7 +3,7 @@ using System;
 
 namespace Mochineko.Resilience
 {
-    public static class RetryResilience
+    public static class RetryFactory
     {
         public static IPolicy<TResult> Retry<TResult>(int retryCount)
         {

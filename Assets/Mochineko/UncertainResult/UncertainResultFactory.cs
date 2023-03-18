@@ -4,7 +4,7 @@ namespace Mochineko.UncertainResult
     /// <summary>
     /// A factory of <see cref="IUncertainResult"/> and <see cref="IUncertainResult{TResult}"/>.
     /// </summary>
-    public static class UncertainResult
+    public static class UncertainResultFactory
     {
         /// <summary>
         /// Creates a <see cref="IUncertainSuccessResult"/>.

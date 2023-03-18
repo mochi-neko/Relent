@@ -13,7 +13,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void SuccessTest()
         {
-            IResult result = Result.Succeed();
+            IResult result = ResultFactory.Succeed();
 
             result.Success.Should().BeTrue();
             result.Failure.Should().BeFalse();
@@ -23,7 +23,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void FailureTest()
         {
-            IResult result = Result.Fail("Test");
+            IResult result = ResultFactory.Fail("Test");
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
@@ -33,7 +33,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void HappyPathTest()
         {
-            IResult result = Result.Succeed();
+            IResult result = ResultFactory.Succeed();
 
             if (result.Success)
             {
@@ -49,7 +49,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathTest()
         {
-            IResult result = Result.Fail("Test");
+            IResult result = ResultFactory.Fail("Test");
 
             if (result.Success)
             {
@@ -65,7 +65,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void HappyPathByPatternMatchingTest()
         {
-            IResult result = Result.Succeed();
+            IResult result = ResultFactory.Succeed();
 
             if (result is ISuccessResult success)
             {
@@ -82,7 +82,7 @@ namespace Mochineko.Result.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathByPatternMatchingTest()
         {
-            IResult result = Result.Fail("Test");
+            IResult result = ResultFactory.Fail("Test");
 
             if (result is ISuccessResult)
             {
