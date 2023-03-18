@@ -8,9 +8,12 @@ using Mochineko.UncertainResult;
 namespace Mochineko.Resilience
 {
     internal sealed class BulkheadPolicy<TResult>
-        : IPolicy<TResult>
+        : IBulkheadPolicy<TResult>
     {
         private readonly SemaphoreSlim semaphoreSlim;
+
+        public int RemainingParallelizationCount
+            => semaphoreSlim.CurrentCount;
         
         public BulkheadPolicy(int maxParallelization)
         {

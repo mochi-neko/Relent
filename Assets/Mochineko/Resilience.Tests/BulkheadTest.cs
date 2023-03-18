@@ -20,7 +20,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task PrimitiveBulkheadTest(int maxParallelization)
         {
-            var policy = BulkheadFactory.Bulkhead<int>(maxParallelization);
+            IBulkheadPolicy<int> policy = BulkheadFactory.Bulkhead<int>(maxParallelization);
 
             var taskList = new List<Task<IResult<int>>>();
             for (var i = 0; i < maxParallelization + 1; i++)
@@ -40,8 +40,13 @@ namespace Mochineko.Resilience.Tests
 #pragma warning restore CS4014
             }
             
+            policy.RemainingParallelizationCount.Should().Be(0,
+                because: "Bulkhead is fulfilled.");
+
             await Task.Delay(TimeSpan.FromSeconds(0.11d));
 
+            policy.RemainingParallelizationCount.Should().Be(maxParallelization - 1);
+            
             for (var i = 0; i < maxParallelization; i++)
             {
                 taskList[i].Status.Should().Be(TaskStatus.RanToCompletion);
