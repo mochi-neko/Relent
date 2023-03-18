@@ -18,7 +18,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task PrimitiveTimeoutTest(float timeout)
         {
-            IPolicy<int> policy = TimeoutFactory.Timeout<int>(TimeSpan.FromSeconds(timeout));
+            ITimeoutPolicy<int> policy = TimeoutFactory.Timeout<int>(TimeSpan.FromSeconds(timeout));
 
             var result = await policy.ExecuteAsync(
                 execute: cancellationToken => WaitUtility.WaitAsUncertain(

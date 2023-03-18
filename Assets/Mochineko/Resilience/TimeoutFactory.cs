@@ -5,7 +5,7 @@ namespace Mochineko.Resilience
 {
     public static class TimeoutFactory
     {
-        public static IPolicy<TResult> Timeout<TResult>(TimeSpan timeout)
+        public static ITimeoutPolicy<TResult> Timeout<TResult>(TimeSpan timeout)
             => new TimeoutPolicy<TResult>(timeout);
     }
 }

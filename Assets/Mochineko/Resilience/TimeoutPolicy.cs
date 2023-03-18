@@ -8,7 +8,7 @@ using Mochineko.UncertainResult;
 namespace Mochineko.Resilience
 {
     internal sealed class TimeoutPolicy<TResult>
-        : IPolicy<TResult>
+        : ITimeoutPolicy<TResult>
     {
         private readonly TimeSpan timeout;
         
