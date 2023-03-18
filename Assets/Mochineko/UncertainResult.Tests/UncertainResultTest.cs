@@ -4,16 +4,16 @@ using FluentAssertions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Mochineko.HttpResult.Tests
+namespace Mochineko.UncertainResult.Tests
 {
     [TestFixture]
-    internal sealed class HttpResultWithNoValueTest
+    internal sealed class UncertainResultTest
     {
         [Test]
         [RequiresPlayMode(false)]
         public void SuccessTest()
         {
-            IHttpResult result = HttpResult.Succeed();
+            IUncertainResult<string> result = UncertainResult.Succeed("Test");
 
             result.Success.Should().BeTrue();
             result.Retryable.Should().BeFalse();
@@ -24,7 +24,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryTest()
         {
-            IHttpResult result = HttpResult.Retry("Test");
+            IUncertainResult<string> result = UncertainResult.Retry<string>("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeTrue();
@@ -35,7 +35,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void FailureTest()
         {
-            IHttpResult result = HttpResult.Fail("Test");
+            IUncertainResult<string> result = UncertainResult.Fail<string>("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeFalse();
@@ -46,7 +46,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathTest()
         {
-            IHttpResult result = HttpResult.Succeed();
+            IUncertainResult<string> result = UncertainResult.Succeed("Test");
 
             if (result.Success)
             {
@@ -66,7 +66,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathTest()
         {
-            IHttpResult result = HttpResult.Retry("Test");
+            IUncertainResult<string> result = UncertainResult.Retry<string>("Test");
 
             if (result.Success)
             {
@@ -86,7 +86,7 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathTest()
         {
-            IHttpResult result = HttpResult.Fail("Test");
+            IUncertainResult<string> result = UncertainResult.Fail<string>("Test");
 
             if (result.Success)
             {
@@ -106,26 +106,27 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathByPatternMatchingTest()
         {
-            IHttpResult result = HttpResult.Succeed();
+            IUncertainResult<string> result = UncertainResult.Succeed<string>("Test");
 
-            if (result is IHttpSuccessResult success)
+            if (result is IUncertainSuccessResult<string> success)
             {
                 // Pass
                 success.Success.Should().BeTrue();
                 success.Retryable.Should().BeFalse();
                 success.Failure.Should().BeFalse();
+                success.Result.Should().Be("Test");
             }
-            else if (result is IHttpRetryableResult retryable)
+            else if (result is IUncertainRetryableResult<string> retryable)
             {
                 throw new Exception();
             }
-            else if (result is IHttpFailureResult failure)
+            else if (result is IUncertainFailureResult<string> failure)
             {
                 throw new Exception();
             }
             else
             {
-                throw new HttpResultPatternMatchException(nameof(result));
+                throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
 
@@ -133,13 +134,13 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathByPatternMatchingTest()
         {
-            IHttpResult result = HttpResult.Retry("Test");
+            IUncertainResult<string> result = UncertainResult.Retry<string>("Test");
 
-            if (result is IHttpSuccessResult success)
+            if (result is IUncertainSuccessResult<string> success)
             {
                 throw new Exception();
             }
-            else if (result is IHttpRetryableResult retryable)
+            else if (result is IUncertainRetryableResult<string> retryable)
             {
                 // Pass
                 retryable.Success.Should().BeFalse();
@@ -147,13 +148,13 @@ namespace Mochineko.HttpResult.Tests
                 retryable.Failure.Should().BeFalse();
                 retryable.Message.Should().Be("Test");
             }
-            else if (result is IHttpFailureResult failure)
+            else if (result is IUncertainFailureResult<string> failure)
             {
                 throw new Exception();
             }
             else
             {
-                throw new HttpResultPatternMatchException(nameof(result));
+                throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
 
@@ -161,17 +162,17 @@ namespace Mochineko.HttpResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathByPatternMatchingTest()
         {
-            IHttpResult result = HttpResult.Fail("Test");
+            IUncertainResult<string> result = UncertainResult.Fail<string>("Test");
 
-            if (result is IHttpSuccessResult success)
+            if (result is IUncertainSuccessResult<string> success)
             {
                 throw new Exception();
             }
-            else if (result is IHttpRetryableResult retryable)
+            else if (result is IUncertainRetryableResult<string> retryable)
             {
                 throw new Exception();
             }
-            else if (result is IHttpFailureResult failure)
+            else if (result is IUncertainFailureResult<string> failure)
             {
                 // Pass
                 failure.Success.Should().BeFalse();
@@ -181,7 +182,7 @@ namespace Mochineko.HttpResult.Tests
             }
             else
             {
-                throw new HttpResultPatternMatchException(nameof(result));
+                throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
     }

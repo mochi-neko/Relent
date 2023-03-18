@@ -1,23 +1,23 @@
 #nullable enable
-namespace Mochineko.HttpResult
+namespace Mochineko.UncertainResult
 {
-    internal sealed class HttpSuccessResult
-        : IHttpSuccessResult
+    internal sealed class UncertainSuccessResult
+        : IUncertainSuccessResult
     {
         public bool Success => true;
         public bool Retryable => false;
         public bool Failure => false;
     }
     
-    internal sealed class HttpSuccessResult<TResult>
-        : IHttpSuccessResult<TResult>
+    internal sealed class UncertainSuccessResult<TResult>
+        : IUncertainSuccessResult<TResult>
     {
         public bool Success => true;
         public bool Retryable => false;
         public bool Failure => false;
         public TResult Result { get; }
         
-        public HttpSuccessResult(TResult result)
+        public UncertainSuccessResult(TResult result)
         {
             Result = result;
         }

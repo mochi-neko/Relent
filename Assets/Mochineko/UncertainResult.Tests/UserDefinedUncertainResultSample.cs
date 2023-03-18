@@ -4,42 +4,42 @@ using FluentAssertions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Mochineko.HttpResult.Tests
+namespace Mochineko.UncertainResult.Tests
 {
     [TestFixture]
-    internal sealed class UserDefinedHttpResultSample
+    internal sealed class UserDefinedUncertainResultSample
     {
         [Test]
         [RequiresPlayMode(false)]
         public void Sample()
         {
-            IHttpResult<string> result = new MyHttpFailureResult<string>("Test", "000");
+            IUncertainResult<string> result = new MyUncertainFailureResult<string>("Test", "000");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeFalse();
             result.Failure.Should().BeTrue();
 
-            if (result is IHttpSuccessResult<string>)
+            if (result is IUncertainSuccessResult<string>)
             {
                 throw new Exception();
             }
-            else if (result is IHttpRetryableResult<string>)
+            else if (result is IUncertainRetryableResult<string>)
             {
                 throw new Exception();
             }
-            else if (result is MyHttpFailureResult<string> myFailure)
+            else if (result is MyUncertainFailureResult<string> myFailure)
             {
                 myFailure.Message.Should().Be("Test");
                 myFailure.ErrorCode.Should().Be("000");
             }
             else
             {
-                throw new HttpResultPatternMatchException(nameof(result));
+                throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
         
-        internal sealed class MyHttpFailureResult<TResult>
-            : IHttpFailureResult<TResult>
+        internal sealed class MyUncertainFailureResult<TResult>
+            : IUncertainFailureResult<TResult>
         {
             public bool Success => false;
             public bool Retryable => false;
@@ -47,7 +47,7 @@ namespace Mochineko.HttpResult.Tests
             public string Message { get; }
             public string ErrorCode { get; }
 
-            public MyHttpFailureResult(string message, string errorCode)
+            public MyUncertainFailureResult(string message, string errorCode)
             {
                 Message = message;
                 ErrorCode = errorCode;

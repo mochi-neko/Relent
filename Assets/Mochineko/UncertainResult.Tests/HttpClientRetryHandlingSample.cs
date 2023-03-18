@@ -9,7 +9,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Mochineko.HttpResult.Tests
+namespace Mochineko.UncertainResult.Tests
 {
     [TestFixture]
     internal sealed class HttpClientRetryHandlingSample
@@ -39,16 +39,16 @@ namespace Mochineko.HttpResult.Tests
             while (retryCount < maxRetryCount)
             {
                 var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-                if (result is IHttpSuccessResult<string> success)
+                if (result is IUncertainSuccessResult<string> success)
                 {
                     // Should break the loop on your code
                     throw new Exception();
                 }
-                else if (result is IHttpRetryableResult<string> retryable)
+                else if (result is IUncertainRetryableResult<string> retryable)
                 {
                     retryCount++;
                 }
-                else if (result is IHttpFailureResult<string> failure)
+                else if (result is IUncertainFailureResult<string> failure)
                 {
                     // Should handle failure on your code
                     throw new Exception();
@@ -56,7 +56,7 @@ namespace Mochineko.HttpResult.Tests
                 else
                 {
                     // Unexpected
-                    throw new HttpResultPatternMatchException(nameof(result));
+                    throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 
@@ -129,12 +129,12 @@ namespace Mochineko.HttpResult.Tests
                     loopTimeoutCancellationTokenSource.Token);
 
                 var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, linkedCancellationTokenSource.Token);
-                if (result is IHttpSuccessResult<string> success)
+                if (result is IUncertainSuccessResult<string> success)
                 {
                     // Should break the loop on your code
                     throw new Exception();
                 }
-                else if (result is IHttpRetryableResult<string> retryable)
+                else if (result is IUncertainRetryableResult<string> retryable)
                 {
                     retryCount++;
 
@@ -149,7 +149,7 @@ namespace Mochineko.HttpResult.Tests
                         break;
                     }
                 }
-                else if (result is IHttpFailureResult<string> failure)
+                else if (result is IUncertainFailureResult<string> failure)
                 {
                     // Should handle failure on your code
                     throw new Exception();
@@ -157,7 +157,7 @@ namespace Mochineko.HttpResult.Tests
                 else
                 {
                     // Unexpected
-                    throw new HttpResultPatternMatchException(nameof(result));
+                    throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 
@@ -193,12 +193,12 @@ namespace Mochineko.HttpResult.Tests
                 }
 
                 var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, timeoutCancellationSource.Token);
-                if (result is IHttpSuccessResult<string> success)
+                if (result is IUncertainSuccessResult<string> success)
                 {
                     // Should break the loop on your code
                     throw new Exception();
                 }
-                else if (result is IHttpRetryableResult<string> retryable)
+                else if (result is IUncertainRetryableResult<string> retryable)
                 {
                     retryCount++;
                     circuitCount++;
@@ -218,7 +218,7 @@ namespace Mochineko.HttpResult.Tests
                         }
                     }
                 }
-                else if (result is IHttpFailureResult<string> failure)
+                else if (result is IUncertainFailureResult<string> failure)
                 {
                     // Should handle failure on your code
                     throw new Exception();
@@ -226,7 +226,7 @@ namespace Mochineko.HttpResult.Tests
                 else
                 {
                     // Unexpected
-                    throw new HttpResultPatternMatchException(nameof(result));
+                    throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 

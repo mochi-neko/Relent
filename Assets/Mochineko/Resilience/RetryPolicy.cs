@@ -2,8 +2,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Mochineko.HttpResult;
 using Mochineko.Result;
+using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience
 {
@@ -32,7 +32,7 @@ namespace Mochineko.Resilience
         }
 
         public async Task<IResult<TResult>> ExecuteAsync(
-            Func<CancellationToken, Task<IHttpResult<TResult>>> execute,
+            Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
             var retryCount = 0;
@@ -40,11 +40,11 @@ namespace Mochineko.Resilience
             while (retryCount < permittedRetryCount)
             {
                 var result = await execute.Invoke(cancellationToken);
-                if (result is IHttpSuccessResult<TResult> success)
+                if (result is IUncertainSuccessResult<TResult> success)
                 {
                     return global::Mochineko.Result.Result.Succeed(success.Result);
                 }
-                else if (result is IHttpRetryableResult<TResult> retryable)
+                else if (result is IUncertainRetryableResult<TResult> retryable)
                 {
                     retryCount++;
 
@@ -64,14 +64,14 @@ namespace Mochineko.Resilience
                             $"Failed to retry because operation was failed by unhandled exception:{exception}.");
                     }
                 }
-                else if (result is IHttpFailureResult<TResult> failure)
+                else if (result is IUncertainFailureResult<TResult> failure)
                 {
                     return global::Mochineko.Result.Result.Fail<TResult>(failure.Message);
                 }
                 else
                 {
                     // Unexpected
-                    throw new HttpResultPatternMatchException(nameof(result));
+                    throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
             

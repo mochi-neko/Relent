@@ -1,10 +1,10 @@
 #nullable enable
-namespace Mochineko.HttpResult
+namespace Mochineko.UncertainResult
 {
     /// <summary>
-    /// Defines a result of HTTP communication.
+    /// Defines an uncertain result of a process.
     /// </summary>
-    public interface IHttpResult
+    public interface IUncertainResult
     {
         bool Success { get; }
         bool Retryable { get; }
@@ -12,12 +12,12 @@ namespace Mochineko.HttpResult
     }
     
     /// <summary>
-    /// Defines a result of HTTP communication.
+    /// Defines an uncertain result of a process.
     /// The type argument may seem to do nothing,
     ///  but prevents cast to wrong types.
     /// </summary>
     /// <typeparam name="TResult">Type of result value</typeparam>
-    public interface IHttpResult<TResult>
+    public interface IUncertainResult<TResult>
     {
         bool Success { get; }
         bool Retryable { get; }
