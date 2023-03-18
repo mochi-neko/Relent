@@ -51,8 +51,8 @@ namespace Mochineko.Resilience
                 {
                     retryCount++;
 
-                    var waitResult = await CertainWait
-                        .Wait(waitDurationProvider.Invoke(retryCount), cancellationToken);
+                    var waitResult = await WaitUtility
+                        .WaitAsync(waitDurationProvider.Invoke(retryCount), cancellationToken);
                     if (waitResult is IFailureResult cancelled)
                     {
                         return ResultFactory.Fail<TResult>(cancelled.Message);

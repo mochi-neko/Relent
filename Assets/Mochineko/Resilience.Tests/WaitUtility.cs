@@ -2,31 +2,31 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Mochineko.Result;
 using Mochineko.UncertainResult;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Tests
 {
-    public static class CertainWait
+    internal static class WaitUtility
     {
-        public static async Task<IResult> Wait(
+        public static async Task<IUncertainResult<TResult>> WaitAsUncertain<TResult>(
             TimeSpan waitTime,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            TResult successResult)
         {
             try
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return ResultFactory.Succeed();
+                return UncertainResultFactory.Succeed(successResult);
             }
             catch (OperationCanceledException exception)
             {
-                return ResultFactory.Fail(
+                return UncertainResultFactory.Retry<TResult>(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
             catch (Exception exception)
             {
-                return ResultFactory.Fail(
+                return UncertainResultFactory.Fail<TResult>(
                     $"Cancelled to wait because of unhandled exception:{exception}.");
             }
         }

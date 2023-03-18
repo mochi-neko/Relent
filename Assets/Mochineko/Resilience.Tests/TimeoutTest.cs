@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Mochineko.UncertainResult;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -22,7 +21,7 @@ namespace Mochineko.Resilience.Tests
             IPolicy<int> policy = TimeoutFactory.Timeout<int>(TimeSpan.FromSeconds(timeout));
 
             var result = await policy.ExecuteAsync(
-                execute: cancellationToken => WaitAsUncertain(
+                execute: cancellationToken => WaitUtility.WaitAsUncertain(
                     TimeSpan.FromSeconds(timeout + 10), // wait over timeout
                     cancellationToken,
                     1),
@@ -30,29 +29,6 @@ namespace Mochineko.Resilience.Tests
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
-        }
-
-        private static async Task<IUncertainResult<TResult>> WaitAsUncertain<TResult>(
-            TimeSpan waitTime,
-            CancellationToken cancellationToken,
-            TResult successResult)
-        {
-            try
-            {
-                await Task.Delay(waitTime, cancellationToken);
-
-                return UncertainResultFactory.Succeed(successResult);
-            }
-            catch (OperationCanceledException exception)
-            {
-                return UncertainResultFactory.Retry<TResult>(
-                    $"Cancelled to wait because operation was cancelled with exception:{exception}.");
-            }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail<TResult>(
-                    $"Cancelled to wait because of unhandled exception:{exception}.");
-            }
         }
     }
 }
