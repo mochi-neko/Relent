@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Mochineko.Result;
 using Mochineko.UncertainResult;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -22,7 +21,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task PrimitiveRetryTest(int retryCount)
         {
-            IPolicy<bool> policy = RetryFactory.Retry<bool>(retryCount);
+            IRetryPolicy<bool> policy = RetryFactory.Retry<bool>(retryCount);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
                 => Task.FromResult<IUncertainResult<bool>>(UncertainResultFactory.Retry<bool>("Force retry."));
@@ -33,6 +32,7 @@ namespace Mochineko.Resilience.Tests
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
+            policy.RetryCount.Should().Be(retryCount);
         }
         
         [TestCase(0, 0.1f)]
@@ -44,7 +44,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task LinearTimeRetryTest(int retryCount, float durationSeconds)
         {
-            IPolicy<bool> policy = RetryFactory.RetryWithWait<bool>(
+            IRetryPolicy<bool> policy = RetryFactory.RetryWithWait<bool>(
                 retryCount,
                 waitDuration:TimeSpan.FromSeconds(durationSeconds));
 
@@ -62,6 +62,7 @@ namespace Mochineko.Resilience.Tests
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
+            policy.RetryCount.Should().Be(retryCount);
             stopWatch.ElapsedMilliseconds.Should().BeGreaterOrEqualTo(
                 (long)(durationSeconds * 1000 * retryCount));
         }
@@ -73,7 +74,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task RetryWithExponentialBackoffTest(int retryCount, double baseNumber)
         {
-            IPolicy<bool> policy = RetryFactory.RetryWithExponentialBackoff<bool>(retryCount, baseNumber);
+            IRetryPolicy<bool> policy = RetryFactory.RetryWithExponentialBackoff<bool>(retryCount, baseNumber);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
                 => Task.FromResult<IUncertainResult<bool>>(UncertainResultFactory.Retry<bool>("Force retry."));
@@ -89,6 +90,7 @@ namespace Mochineko.Resilience.Tests
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
+            policy.RetryCount.Should().Be(retryCount);
             stopWatch.ElapsedMilliseconds.Should().BeGreaterOrEqualTo(
                 (long)(1000 * IntegrateExponentialBackoffDuration(retryCount, baseNumber)));
         }
@@ -111,7 +113,7 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task RetryWithJitterTest(int retryCount, double minimum, double maximum)
         {
-            IPolicy<bool> policy = RetryFactory.RetryWithJitter<bool>(retryCount, minimum, maximum);
+            IRetryPolicy<bool> policy = RetryFactory.RetryWithJitter<bool>(retryCount, minimum, maximum);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
                 => Task.FromResult<IUncertainResult<bool>>(UncertainResultFactory.Retry<bool>("Force retry."));
@@ -127,6 +129,7 @@ namespace Mochineko.Resilience.Tests
 
             result.Success.Should().BeFalse();
             result.Failure.Should().BeTrue();
+            policy.RetryCount.Should().Be(retryCount);
             stopWatch.ElapsedMilliseconds.Should().BeGreaterOrEqualTo(
                 (long)(1000 * minimum * retryCount));
         }

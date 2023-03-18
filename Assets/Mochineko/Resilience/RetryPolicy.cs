@@ -8,10 +8,13 @@ using Mochineko.UncertainResult;
 namespace Mochineko.Resilience
 {
     internal sealed class RetryPolicy<TResult>
-        : IPolicy<TResult>
+        : IRetryPolicy<TResult>
     {
         private readonly int permittedRetryCount;
         private readonly Func<int, TimeSpan> waitDurationProvider;
+        
+        private int retryCount;
+        public int RetryCount => retryCount;
 
         public RetryPolicy(int permittedRetryCount)
         {
@@ -35,7 +38,7 @@ namespace Mochineko.Resilience
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
-            var retryCount = 0;
+            retryCount = 0;
 
             while (retryCount < permittedRetryCount)
             {
