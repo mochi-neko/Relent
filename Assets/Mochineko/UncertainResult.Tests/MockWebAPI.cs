@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Mochineko.UncertainResult.Tests
 {
-    internal static class MockWebAPI
+    public static class MockWebAPI
     {
         public static async Task<IUncertainResult<string>> GetAsync(
             HttpClient httpClient,

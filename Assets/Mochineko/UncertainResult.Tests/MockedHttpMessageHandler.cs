@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mochineko.UncertainResult.Tests
 {
-    internal sealed class MockedHttpMessageHandler : HttpMessageHandler
+    public sealed class MockedHttpMessageHandler : HttpMessageHandler
     {
         private readonly Func<CancellationToken, Task<HttpResponseMessage>>? responseFactory;
         private readonly HttpResponseMessage? httpResponseMessage;
