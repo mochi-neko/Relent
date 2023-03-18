@@ -35,7 +35,9 @@ namespace Mochineko.Resilience.Tests
                 taskList.Add(task);
 
                 // Does not wait to complete.
+#pragma warning disable CS4014
                 Task.Run(() => task.ConfigureAwait(false));
+#pragma warning restore CS4014
             }
             
             await Task.Delay(TimeSpan.FromSeconds(0.11d));

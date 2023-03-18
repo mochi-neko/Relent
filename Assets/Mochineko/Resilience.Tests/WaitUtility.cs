@@ -30,5 +30,28 @@ namespace Mochineko.Resilience.Tests
                     $"Cancelled to wait because of unhandled exception:{exception}.");
             }
         }
+        
+        public static async Task<IUncertainResult<TResult>> WaitAndRetryAsUncertain<TResult>(
+            TimeSpan waitTime,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(waitTime, cancellationToken);
+
+                return UncertainResultFactory.Retry<TResult>(
+                    "Retryable after wait.");
+            }
+            catch (OperationCanceledException exception)
+            {
+                return UncertainResultFactory.Retry<TResult>(
+                    $"Cancelled to wait because operation was cancelled with exception:{exception}.");
+            }
+            catch (Exception exception)
+            {
+                return UncertainResultFactory.Fail<TResult>(
+                    $"Cancelled to wait because of unhandled exception:{exception}.");
+            }
+        }
     }
 }
