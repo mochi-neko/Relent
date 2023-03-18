@@ -23,14 +23,20 @@ namespace Mochineko.Resilience.Tests
                 .Wrap(retry)
                 .Wrap(eachTimeout);
 
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            
             var result = await policy.ExecuteAsync(
                 execute: cancellationToken => WaitUtility.WaitAndRetryAsUncertain<string>(
                     TimeSpan.FromSeconds(0.5f), // wait over timeout
                     cancellationToken),
                 cancellationToken: CancellationToken.None);
 
+            stopwatch.Stop();
+            
             result.Failure.Should().BeTrue();
             retry.RetryCount.Should().Be(5); // 5 = 0.5s(total) / 0.1s(each)
+            stopwatch.ElapsedMilliseconds.Should().BeGreaterOrEqualTo((long)(1000 * 0.1d * 5));
         }
 
         [Test]
