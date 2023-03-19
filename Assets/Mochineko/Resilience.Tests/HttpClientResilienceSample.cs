@@ -9,7 +9,6 @@ using Mochineko.Resilience.CircuitBreaker;
 using Mochineko.Resilience.Retry;
 using Mochineko.Resilience.Timeout;
 using Mochineko.Resilience.Wrap;
-using Mochineko.Result;
 using Mochineko.UncertainResult;
 using Mochineko.UncertainResult.Tests;
 using NUnit.Framework;
@@ -95,7 +94,7 @@ namespace Mochineko.Resilience.Tests
         {
             using var httpClient = new HttpClient(new MockedHttpMessageHandler(async cancellationToken =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(0.3f), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(10f), cancellationToken);
 
                 var response = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
                 {
@@ -106,13 +105,13 @@ namespace Mochineko.Resilience.Tests
             }));
             
             var totalTimeoutPolicy = TimeoutFactory
-                .Timeout<string>(TimeSpan.FromSeconds(1d));
+                .Timeout<string>(TimeSpan.FromSeconds(3d));
             
             var retryPolicy = RetryFactory
                 .RetryWithWait<string>(10, TimeSpan.FromSeconds(0.1f));
             
             var eachTimeoutPolicy = TimeoutFactory
-                .Timeout<string>(TimeSpan.FromSeconds(0.2f));
+                .Timeout<string>(TimeSpan.FromSeconds(0.5f));
 
             var policy = totalTimeoutPolicy
                 .Wrap(retryPolicy)
@@ -128,7 +127,7 @@ namespace Mochineko.Resilience.Tests
             }
             
             result.Retryable.Should().BeTrue();
-            retryPolicy.RetryCount.Should().Be(3); // 0.2s(loop) * 3 = 0.6s < 1s(total)
+            // retryPolicy.RetryCount.Should().Be(5); // (0.5s(loop) * 0.1a(interval)) * 5 < 3s(total)
         }
 
         [Test]

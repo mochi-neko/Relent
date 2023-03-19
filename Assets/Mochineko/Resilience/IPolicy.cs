@@ -2,14 +2,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Mochineko.Result;
 using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience
 {
     public interface IPolicy
     {
-        Task<IResult> ExecuteAsync(
+        Task<IUncertainResult> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult>> execute,
             CancellationToken cancellationToken);
     }

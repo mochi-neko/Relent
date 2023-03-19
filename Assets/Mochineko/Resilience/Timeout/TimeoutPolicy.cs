@@ -2,11 +2,52 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Mochineko.Result;
 using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience.Timeout
 {
+    internal sealed class TimeoutPolicy
+        : ITimeoutPolicy
+    {
+        private readonly TimeSpan timeout;
+        
+        public TimeoutPolicy(TimeSpan timeout)
+        {
+            this.timeout = timeout;
+        }
+        
+        public async Task<IUncertainResult> ExecuteAsync(
+            Func<CancellationToken, Task<IUncertainResult>> execute,
+            CancellationToken cancellationToken)
+        {
+            using var timeoutCancellationTokenSource = new CancellationTokenSource(timeout);
+            using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken,
+                timeoutCancellationTokenSource.Token);
+
+            var result = await execute(linkedCancellationTokenSource.Token);
+            if (result is IUncertainSuccessResult success)
+            {
+                return success;
+            }
+            else if (result is IUncertainRetryableResult retryable)
+            {
+                return UncertainResultFactory.Retry(
+                    $"Retryable because result was retryable or timeout -> {retryable.Message}.");
+            }
+            else if (result is IUncertainFailureResult failure)
+            {
+                return UncertainResultFactory.Fail(
+                    $"Failed because result was failure or timeout -> {failure.Message}.");
+            }
+            else
+            {
+                // Panic!
+                throw new UncertainResultPatternMatchException(nameof(result));
+            }
+        }
+    }
+    
     internal sealed class TimeoutPolicy<TResult>
         : ITimeoutPolicy<TResult>
     {
@@ -29,7 +70,7 @@ namespace Mochineko.Resilience.Timeout
             var result = await execute(linkedCancellationTokenSource.Token);
             if (result is IUncertainSuccessResult<TResult> success)
             {
-                return UncertainResultFactory.Succeed(success.Result);
+                return success;
             }
             else if (result is IUncertainRetryableResult<TResult> retryable)
             {

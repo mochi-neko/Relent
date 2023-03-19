@@ -6,6 +6,29 @@ using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience.Wrap
 {
+    internal sealed class PolicyWrap
+        : IPolicy
+    {
+        private readonly IPolicy innerPolicy;
+        private readonly IPolicy outerPolicy;
+
+        public PolicyWrap(
+            IPolicy innerPolicy,
+            IPolicy outerPolicy)
+        {
+            this.innerPolicy = innerPolicy;
+            this.outerPolicy = outerPolicy;
+        }
+
+        public async Task<IUncertainResult> ExecuteAsync(
+            Func<CancellationToken, Task<IUncertainResult>> execute,
+            CancellationToken cancellationToken)
+            => await outerPolicy.ExecuteAsync(
+                execute: async innerCancellationToken
+                    => await innerPolicy.ExecuteAsync(execute, innerCancellationToken),
+                cancellationToken);
+    }
+    
     internal sealed class PolicyWrap<TResult>
         : IPolicy<TResult>
     {

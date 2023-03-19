@@ -8,6 +8,28 @@ namespace Mochineko.Resilience.Tests
 {
     internal static class WaitUtility
     {
+        public static async Task<IUncertainResult> WaitAndSucceed(
+            TimeSpan waitTime,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(waitTime, cancellationToken);
+
+                return UncertainResultFactory.Succeed();
+            }
+            catch (OperationCanceledException exception)
+            {
+                return UncertainResultFactory.Retry(
+                    $"Cancelled to wait because operation was cancelled with exception:{exception}.");
+            }
+            catch (Exception exception)
+            {
+                return UncertainResultFactory.Fail(
+                    $"Cancelled to wait because of unhandled exception:{exception}.");
+            }
+        }
+        
         public static async Task<IUncertainResult<TResult>> WaitAndSucceed<TResult>(
             TimeSpan waitTime,
             CancellationToken cancellationToken,
@@ -27,6 +49,29 @@ namespace Mochineko.Resilience.Tests
             catch (Exception exception)
             {
                 return UncertainResultFactory.Fail<TResult>(
+                    $"Cancelled to wait because of unhandled exception:{exception}.");
+            }
+        }
+        
+        public static async Task<IUncertainResult> WaitAndRetry(
+            TimeSpan waitTime,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(waitTime, cancellationToken);
+
+                return UncertainResultFactory.Retry(
+                    "Retryable after wait.");
+            }
+            catch (OperationCanceledException exception)
+            {
+                return UncertainResultFactory.Retry(
+                    $"Cancelled to wait because operation was cancelled with exception:{exception}.");
+            }
+            catch (Exception exception)
+            {
+                return UncertainResultFactory.Fail(
                     $"Cancelled to wait because of unhandled exception:{exception}.");
             }
         }
