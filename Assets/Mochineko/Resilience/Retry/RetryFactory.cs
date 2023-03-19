@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Retry
 {
     public static class RetryFactory
     {

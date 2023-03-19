@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.CircuitBreaker
 {
     public static class CircuitBreakerFactory
     {

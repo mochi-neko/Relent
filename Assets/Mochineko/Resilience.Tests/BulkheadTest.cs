@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Mochineko.Resilience.Bulkhead;
 using Mochineko.Result;
 using NUnit.Framework;
 using UnityEngine.TestTools;

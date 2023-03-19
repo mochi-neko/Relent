@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Mochineko.Result;
 using Mochineko.UncertainResult;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Retry
 {
     internal sealed class RetryPolicy<TResult>
         : IRetryPolicy<TResult>

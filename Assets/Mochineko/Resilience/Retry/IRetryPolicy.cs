@@ -1,5 +1,5 @@
 #nullable enable
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Retry
 {
     public interface IRetryPolicy
         : IPolicy

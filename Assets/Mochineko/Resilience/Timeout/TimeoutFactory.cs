@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Timeout
 {
     public static class TimeoutFactory
     {

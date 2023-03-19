@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Mochineko.Result;
 using Mochineko.UncertainResult;
 
-namespace Mochineko.Resilience
+namespace Mochineko.Resilience.Wrap
 {
     internal sealed class PolicyWrap<TResult>
         : IPolicy<TResult>
