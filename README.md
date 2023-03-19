@@ -299,7 +299,8 @@ public IResult<MyObject> MyOperation()
 ## Resilience
 
 [Resilience](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience)
- is a module that provides resilience for an uncertain operation,
+ is a module that provides resilience for an uncertain operation
+ caused by unpredictable factors,
  e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs).
 
 It depends on [UncertainResult](#uncertain-result).
