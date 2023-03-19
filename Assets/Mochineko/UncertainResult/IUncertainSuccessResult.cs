@@ -2,7 +2,7 @@
 namespace Mochineko.UncertainResult
 {
     /// <summary>
-    /// Defines a success result of a process.
+    /// Defines a success result of an operation.
     /// </summary>
     public interface IUncertainSuccessResult
         : IUncertainResult
@@ -10,12 +10,15 @@ namespace Mochineko.UncertainResult
     }
 
     /// <summary>
-    /// Defines a success result of a process with a value.
+    /// Defines a success result of an operation with a value.
     /// </summary>
     /// <typeparam name="TResult">Type of result value</typeparam>
     public interface IUncertainSuccessResult<TResult>
         : IUncertainResult<TResult>
     {
+        /// <summary>
+        /// Result value.
+        /// </summary>
         TResult Result { get; }
     }
 }

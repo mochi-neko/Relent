@@ -1,4 +1,6 @@
 #nullable enable
+using System;
+
 namespace Mochineko.Result
 {
     internal sealed class SuccessResult
@@ -17,7 +19,7 @@ namespace Mochineko.Result
         
         public SuccessResult(TResult result)
         {
-            Result = result;
+            Result = result ?? throw new ArgumentNullException(nameof(result));
         }
     }
 }

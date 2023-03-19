@@ -6,8 +6,17 @@ using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience
 {
+    /// <summary>
+    /// Utilities for waiting.
+    /// </summary>
     public static class WaitUtility
     {
+        /// <summary>
+        /// Waits for the specified time as <see cref="IUncertainResult"/>.
+        /// </summary>
+        /// <param name="waitTime"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<IUncertainResult> WaitAsync(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
@@ -30,6 +39,12 @@ namespace Mochineko.Resilience
             }
         }
 
+        /// <summary>
+        /// Waits for the specified <see cref="SemaphoreSlim"/> as <see cref="IUncertainResult"/>.
+        /// </summary>
+        /// <param name="semaphoreSlim"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static async Task<IUncertainResult> WaitAsync(
             SemaphoreSlim semaphoreSlim,
             CancellationToken cancellationToken)
