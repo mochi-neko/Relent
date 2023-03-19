@@ -1,8 +1,8 @@
 {
-  "name": "com.mochineko.resilience",
+  "name": "com.mochineko.relent.resilience",
   "version": "0.1.0",
-  "displayName": "Resilience",
-  "description": "Provides resilience for an uncertain process.",
+  "displayName": "Relent.Resilience",
+  "description": "Provides resilience for an uncertain operation.",
   "unity": "2021.3",
   "author": {
     "name": "Mochineko",
