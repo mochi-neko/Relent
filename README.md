@@ -1,6 +1,8 @@
 # Relent
 
-The Relent is a library that provides explicit error handling without relying on null or exceptions and resilience for uncertain operations in Unity/C#.
+The Relent is a library that provides explicit error handling
+ without relying on null or exceptions
+ and resilience for uncertain operations in Unity/C#.
 
 ## Features
 
@@ -31,7 +33,8 @@ This library contains these modules:
 
 ### Usage
 
-Let `MyOperation()` be your operation that can be failed with any exception,
+Let `MyOperation()` be your operation that can be failed
+ with any exception,
 
 ```csharp
 public MyObject MyOperation()
@@ -43,7 +46,7 @@ public MyObject MyOperation()
     }
     else
     {
-        throw new Exception("Any exception");
+        throw new HandledException("Any handled exception");
     }   
 }
 ```
@@ -95,14 +98,15 @@ Once you have wrapped the result,
  you don't need to worry about null and exceptions
  expect for the fatal exception that you don't want to handle.
 
-Of course, you can define your operation without null or any exception at first like this:
+Of course, you can define your operation
+ without null or any exception at first like this:
 
 ```csharp
 public IResult<MyObject> MyOperation()
 {
     if (anyCondition)
     {
-        return ResultFactory.Succeed(myObject);;
+        return ResultFactory.Succeed(myObject);
     }
     else
     {
@@ -115,7 +119,7 @@ public IResult<MyObject> MyOperation()
 ### Samples
 
 - [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Result.Tests)
-- [Sample codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Result.Tests/ResultSample.cs)
+- [Sample](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Result.Tests/ResultSample.cs)
 
 ### How to import by Unity Package Manager
 
@@ -133,7 +137,9 @@ Add this dependency to your `Packages/manifest.json`:
 ## Uncertain Result
 
 [UncertainResult](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/UncertainResult)
- is an explicit error handling module for an uncertain operation that can be retryable failure.
+ is an explicit error handling module
+ for an uncertain operation that can be retryable failure,
+ e.g. HTTP communication for a WebAPI.
 
 ### Core specification
 
@@ -143,9 +149,141 @@ Add this dependency to your `Packages/manifest.json`:
 
 ### Usage
 
+Let `MyOperation()` be your uncertain operation that can be failed
+ and be retryable with any exception,
+
+```csharp
+public MyObject MyOperation()
+{
+    // do something that can throw exception
+    if (anyCondition)
+    {
+        return new MyObject();
+    }
+    else if (anyOtherCondition)
+    {
+        throw new RetryableException("Any retryable exception");
+    }
+    else
+    {
+        throw new HandledException("Any exception");
+    }   
+}
+```
+
+you can wrap result by using `IUncertainResult<TResult>` like this:
+
+```csharp
+public IUncertainResult<MyObject> MyOperationByResult()
+{
+    try
+    {
+        var myObject = MyOperation();
+        
+        return ResultFactory.Succeed(myObject);
+    }
+    // Catch any exception what you want to handle as retryable.
+    catch (RetryableException exception)
+    {
+        return ResultFactory.Retry<MyObject>(
+            $"Why did it fail? {exception.Message}");
+    }
+    // Catch any exception what you want to handle as failure.
+    catch (HandledException exception)
+    {
+        return ResultFactory.Fail<MyObject>(
+            $"Why did it fail? {exception.Message}");
+    }
+    catch (Exception exception)
+    {
+        // Panic! Unexpected exception what you don't want to handle.
+        throw;
+    }
+}
+```
+
+then you can handle the result like this:
+
+```csharp
+public void MyMethod()
+{
+    IUncertaionResult<MyObject> result = MyOperationByResult();
+    
+    if (result is IUncertaionSuccessResult<MyObject> successResult)
+    {
+        // do something with successResult.Result
+    }
+    else if (result is IUncertaionRetryResult retryableResult)
+    {
+        // do something with retryResult.Message
+        // can retry operation
+    }
+    else if (result is IUncertaionFailureResult failureResult)
+    {
+        // do something with failureResult.Message
+    }
+}
+```
+
+You can retry operation
+ when the result can cast `IUncertainRetryResult`.
+
+Also you can use `switch` syntax like this:
+
+```csharp
+public void MyMethod()
+{
+    IUncertaionResult<MyObject> result = MyOperationByResult();
+    
+    switch (result)
+    {
+        case IUncertaionSuccessResult<MyObject> successResult:
+            // do something with successResult.Result
+            break;
+        case IUncertaionRetryResult retryableResult:
+            // do something with retryResult.Message
+            // can retry operation
+            break;
+        case IUncertaionFailureResult failureResult:
+            // do something with failureResult.Message
+            break;
+    }
+}
+```
+
+Once you have wrapped the result,
+ you don't need to worry about null and exceptions
+ expect for the fatal exception that you don't want to handle.
+
+Of course, you can define your operation
+ without null or any exception at first like this:
+
+```csharp
+public IResult<MyObject> MyOperation()
+{
+    if (anyCondition)
+    {
+        return ResultFactory.Succeed(myObject);
+    }
+    else if (anyOtherCondition)
+    {
+        return ResultFactory.Retry<MyObject>(
+            "Why did it fail?");
+    }
+    else
+    {
+        return ResultFactory.Fail<MyObject>(
+            "Why did it fail?");
+    }   
+}
+```
+
 ### Samples
 
-
+- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/UncertainResult.Tests)
+- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/HttpClientTest.cs)
+  - [A sample of a WebAPI communication implementation](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/MockWebAPI.cs) 
+- [Sample with a result what you define](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/UserDefinedUncertainResultSample.cs)
 
 ### How to import by Unity Package Manager
 
