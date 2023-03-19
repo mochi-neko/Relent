@@ -25,6 +25,19 @@ This library contains these modules:
 [Result](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Result)
  is a simple and explicit error handling module.
 
+### How to import by Unity Package Manager
+
+Add this dependency to your `Packages/manifest.json`:
+
+```json
+{
+  "dependencies": {
+    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.0",
+    ...
+  }
+}
+```
+
 ### Core specification
 
 - [IResult](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Result/IResult.cs)
@@ -121,25 +134,23 @@ public IResult<MyObject> MyOperation()
 - [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Result.Tests)
 - [Sample](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Result.Tests/ResultSample.cs)
 
-### How to import by Unity Package Manager
-
-Add this dependency to your `Packages/manifest.json`:
-
-```json
-{
-  "dependencies": {
-    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.0",
-    ...
-  }
-}
-```
-
 ## Uncertain Result
 
 [UncertainResult](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/UncertainResult)
  is an explicit error handling module
  for an uncertain operation that can be retryable failure,
- e.g. HTTP communication for a WebAPI.
+ e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/MockWebAPI.cs).
+
+### How to import by Unity Package Manager
+
+```json
+{
+  "dependencies": {
+    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.0",
+    ...
+  }
+}
+```
 
 ### Core specification
 
@@ -285,37 +296,25 @@ public IResult<MyObject> MyOperation()
   - [A sample of a WebAPI communication implementation](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/MockWebAPI.cs) 
 - [Sample with a result what you define](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/UserDefinedUncertainResultSample.cs)
 
-### How to import by Unity Package Manager
-
-```json
-{
-  "dependencies": {
-    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.0",
-    ...
-  }
-}
-```
-
 ## Resilience
 
 [Resilience](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience)
- is a module that provides resilience for an uncertain operation.
+ is a module that provides resilience for an uncertain operation,
+ e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs).
 
-### Core specification
+It depends on [UncertainResult](#uncertain-result).
 
-- [IPolicy](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/IPolicy.cs)
+### Why don't I use [Polly](https://github.com/App-vNext/Polly)?
 
-### Features
+The timeout of Polly relies on `OperationCanceledException`
+ thrown by linked `CancellationToken`
+ (user cancellation token and timeout cancellation token)
+ in an operation.
 
-- [Retry]()
-- [Timeout]()
-- [Circuit Breaker]()
-- [Bulkhead]()
-- [Wrap]()
-
-### Usage
-
-### Samples
+When you use [UncertainResult](#uncertain-result),
+ we want to catch `OperationCanceledException`
+ as retryable result,
+ then we cannot cancel by timeout.
 
 ### How to import by Unity Package Manager
 
@@ -329,6 +328,67 @@ public IResult<MyObject> MyOperation()
 }
 ```
 
+### Core specification
+
+- [IPolicy](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/IPolicy.cs)
+
+### Features
+
+- [Retry](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/Retry)
+- [Timeout](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/Timeout)
+- [Circuit Breaker](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/CircuitBreaker)
+- [Bulkhead](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/Bulkhead)
+- [Wrap](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience/Wrap)
+
+### Usage
+
+Use some policies what you want to use.
+
+#### Retry
+
+The retry policy is a policy that retries an operation
+ when the operation returns an uncertain result
+ that can cast `IUncertainRetryResult`.
+
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/RetryTest.cs).
+
+#### Timeout
+
+The timeout policy is a policy
+ that cancels an operation
+ when the operation takes too long.
+
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/TimeoutTest.cs).
+
+#### Circuit Breaker
+
+The circuit breaker policy is a policy
+ that breaks an operation
+ when the operation returns continuous uncertain results
+ that can cast `IUncertainRetryResult`.
+
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/CircuitBreakerTest.cs).
+
+#### Bulkhead
+
+The bulkhead policy is a policy
+ that limits the number of operations
+ that can be executed at the same time.
+
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/BulkheadTest.cs).
+
+#### Wrap
+
+The wrap policy is a policy
+ that can combine some policies.
+
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/WrapTest.cs).
+
+### Samples
+
+- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience.Tests)
+- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs)
+
 ## Acknowledgments
 
 This library is inspired by there posts and libraries:
@@ -336,6 +396,8 @@ This library is inspired by there posts and libraries:
 - [HttpClient - Error handling, a test driven approach](https://josef.codes/httpclient-error-handling-a-test-driven-approach/)
 - [Functional C#: Handling failures, input errors](https://enterprisecraftsmanship.com/posts/functional-c-handling-failures-input-errors/)
 - [Polly](https://github.com/App-vNext/Polly)
+- [Result in Rust](https://doc.rust-lang.org/std/result/enum.Result.html)
+- [anyhow::Result in Rust](https://docs.rs/anyhow/latest/anyhow/type.Result.html)
 
 ## Changelog
 
