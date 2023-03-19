@@ -18,13 +18,13 @@ namespace Mochineko.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task PrimitiveCircuitBreakerTest()
         {
-            var breakTime = TimeSpan.FromSeconds(0.1f);
+            var interval = TimeSpan.FromSeconds(0.1f);
             ICircuitBreakerPolicy<bool> policy = CircuitBreakerFactory
                 .CircuitBreaker<bool>(
                     failureThreshold: 3,
-                    breakTime);
+                    interval);
 
-            IResult<bool> result;
+            IUncertainResult<bool> result;
 
             policy.State.Should().Be(CircuitState.Closed,
                 because: "Default state of circuit is closed.");
@@ -37,29 +37,29 @@ namespace Mochineko.Resilience.Tests
 
             result = await ExecuteAsRetryable(policy);
             result = await ExecuteAsRetryable(policy);
-            result.Failure.Should().BeTrue();
+            result.Retryable.Should().BeTrue();
             policy.State.Should().Be(CircuitState.Closed,
                 because: "Circuit count is less than failureThreshold then circuit holds closed.");
 
             result = await ExecuteAsRetryable(policy);
-            result.Failure.Should().BeTrue();
+            result.Retryable.Should().BeTrue();
             policy.State.Should().Be(CircuitState.Open,
                 because: "Circuit count equals to failureThreshold then circuit is open.");
 
             result = await ExecuteAsSuccess(policy, true);
-            result.Failure.Should().BeTrue(because: "Circuit is open.");
+            result.Retryable.Should().BeTrue(because: "Circuit is open.");
             policy.State.Should().Be(CircuitState.Open);
 
             // Wait to change state to half-open.
-            await Task.Delay(breakTime * 2);
+            await Task.Delay(interval * 2);
 
             result = await ExecuteAsRetryable(policy);
-            result.Failure.Should().BeTrue();
+            result.Retryable.Should().BeTrue();
             policy.State.Should().Be(CircuitState.Open,
                 "If result is failure when is half-open then circuit is reopen.");
 
             // Wait to change state to half-open.
-            await Task.Delay(breakTime * 2);
+            await Task.Delay(interval * 2);
 
             result = await ExecuteAsSuccess(policy, true);
             result.Success.Should().BeTrue();
@@ -83,7 +83,7 @@ namespace Mochineko.Resilience.Tests
             result.Failure.Should().BeTrue();
         }
 
-        private static async Task<IResult<TResult>> ExecuteAsRetryable<TResult>(
+        private static async Task<IUncertainResult<TResult>> ExecuteAsRetryable<TResult>(
             ICircuitBreakerPolicy<TResult> policy)
         {
             return await policy.ExecuteAsync(
@@ -92,13 +92,13 @@ namespace Mochineko.Resilience.Tests
                 cancellationToken: CancellationToken.None);
         }
 
-        private static async Task<IResult<TResult>> ExecuteAsSuccess<TResult>(
+        private static async Task<IUncertainResult<TResult>> ExecuteAsSuccess<TResult>(
             ICircuitBreakerPolicy<TResult> policy,
             TResult resultValue)
         {
             return await policy.ExecuteAsync(
                 execute: _ => Task.FromResult<IUncertainResult<TResult>>(
-                    UncertainResultFactory.Succeed<TResult>(resultValue)),
+                    UncertainResultFactory.Succeed(resultValue)),
                 cancellationToken: CancellationToken.None);
         }
     }

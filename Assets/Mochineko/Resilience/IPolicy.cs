@@ -16,7 +16,7 @@ namespace Mochineko.Resilience
     
     public interface IPolicy<TResult>
     {
-        Task<IResult<TResult>> ExecuteAsync(
+        Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken);
     }

@@ -3,12 +3,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Mochineko.Result;
+using Mochineko.UncertainResult;
 
 namespace Mochineko.Resilience
 {
     public static class WaitUtility
     {
-        public static async Task<IResult> WaitAsync(
+        public static async Task<IUncertainResult> WaitAsync(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
@@ -16,21 +17,21 @@ namespace Mochineko.Resilience
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return ResultFactory.Succeed();
+                return UncertainResultFactory.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return ResultFactory.Fail(
+                return UncertainResultFactory.Retry(
                     $"Cancelled to wait delay because operation was cancelled with exception:{exception}.");
             }
             catch (Exception exception)
             {
-                return ResultFactory.Fail(
-                    $"Cancelled to wait delay because of unhandled exception:{exception}.");
+                return UncertainResultFactory.Fail(
+                    $"Failed to wait delay because of an unhandled exception:{exception}.");
             }
         }
 
-        public static async Task<IResult> WaitAsync(
+        public static async Task<IUncertainResult> WaitAsync(
             SemaphoreSlim semaphoreSlim,
             CancellationToken cancellationToken)
         {
@@ -38,17 +39,17 @@ namespace Mochineko.Resilience
             {
                 await semaphoreSlim.WaitAsync(cancellationToken);
 
-                return ResultFactory.Succeed();
+                return UncertainResultFactory.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return ResultFactory.Fail(
+                return UncertainResultFactory.Retry(
                     $"Cancelled to wait semaphore because operation was cancelled with exception:{exception}.");
             }
             catch (Exception exception)
             {
-                return ResultFactory.Fail(
-                    $"Cancelled to wait semaphore because of unhandled exception:{exception}.");
+                return UncertainResultFactory.Fail(
+                    $"Failed to wait semaphore because of unhandled exception:{exception}.");
             }
         }
     }

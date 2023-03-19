@@ -22,7 +22,7 @@ namespace Mochineko.Resilience.Tests
             ITimeoutPolicy<int> policy = TimeoutFactory.Timeout<int>(TimeSpan.FromSeconds(timeout));
 
             var result = await policy.ExecuteAsync(
-                execute: cancellationToken => WaitUtility.WaitAsUncertain(
+                execute: cancellationToken => WaitUtility.WaitAndSucceed(
                     TimeSpan.FromSeconds(timeout + 10), // wait over timeout
                     cancellationToken,
                     1),

@@ -11,7 +11,7 @@ namespace Mochineko.Resilience.CircuitBreaker
         : ICircuitBreakerPolicy<TResult>
     {
         private readonly int failureThreshold;
-        private readonly TimeSpan breakTime;
+        private readonly TimeSpan interval;
         
         private readonly object lockObject = new();
         
@@ -20,7 +20,7 @@ namespace Mochineko.Resilience.CircuitBreaker
         private int failureCount;
         private DateTime lastFailureTime;
         
-        public CircuitBreakerPolicy(int failureThreshold, TimeSpan breakTime)
+        public CircuitBreakerPolicy(int failureThreshold, TimeSpan interval)
         {
             if (failureThreshold <= 0)
             {
@@ -28,7 +28,7 @@ namespace Mochineko.Resilience.CircuitBreaker
             }
             
             this.failureThreshold = failureThreshold;
-            this.breakTime = breakTime;
+            this.interval = interval;
             
             state = CircuitState.Closed;
             failureCount = 0;
@@ -61,7 +61,7 @@ namespace Mochineko.Resilience.CircuitBreaker
 
         private bool CanCloseHalf
             => state is CircuitState.Open
-            && DateTime.Now - lastFailureTime >= breakTime;
+            && DateTime.Now - lastFailureTime >= interval;
         
         private void CloseHalf()
         {
@@ -79,14 +79,14 @@ namespace Mochineko.Resilience.CircuitBreaker
             }
         }
 
-        public async Task<IResult<TResult>> ExecuteAsync(
+        public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
             if (state is CircuitState.Isolated)
             {
-                return ResultFactory.Fail<TResult>(
-                    "Failed because circuit breaker is isolated.");
+                return UncertainResultFactory.Fail<TResult>(
+                    "Failed because circuit breaker is manually isolated.");
             }
             
             if (CanCloseHalf)
@@ -96,8 +96,8 @@ namespace Mochineko.Resilience.CircuitBreaker
             
             if (state is CircuitState.Open)
             {
-                return ResultFactory.Fail<TResult>(
-                    "Failed because circuit breaker is open.");
+                return UncertainResultFactory.Retry<TResult>(
+                    $"Retryable because circuit breaker is open by over threshold failure:{failureThreshold}.");
             }
             else // Closed or HalfOpen
             {
@@ -110,25 +110,24 @@ namespace Mochineko.Resilience.CircuitBreaker
                         Close();
                     }
                     
-                    return ResultFactory.Succeed(success.Result);
+                    return UncertainResultFactory.Succeed(success.Result);
                 }
                 else if (result is IUncertainRetryableResult<TResult> retryable)
                 {
                     TrackFailure();
                     
-                    return ResultFactory.Fail<TResult>(
-                        $"Failed because result was retryable:{retryable.Message}.");
+                    return UncertainResultFactory.Retry<TResult>(
+                        $"Retryable at circuit breaker because -> {retryable.Message}.");
                 }
                 else if (result is IUncertainFailureResult<TResult> failure)
                 {
-                    TrackFailure();
-                    
-                    return ResultFactory.Fail<TResult>(
-                        $"Failed because result was failure:{failure.Message}.");
+                    return UncertainResultFactory.Fail<TResult>(
+                        $"Failed at circuit breaker because -> {failure.Message}.");
                 }
                 else
                 {
-                    throw new ResultPatternMatchException(nameof(result));
+                    // Panic!
+                    throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
         }

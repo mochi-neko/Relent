@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Mochineko.Resilience.Bulkhead;
 using Mochineko.Result;
+using Mochineko.UncertainResult;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -23,11 +24,11 @@ namespace Mochineko.Resilience.Tests
         {
             IBulkheadPolicy<int> policy = BulkheadFactory.Bulkhead<int>(maxParallelization);
 
-            var taskList = new List<Task<IResult<int>>>();
+            var taskList = new List<Task<IUncertainResult<int>>>();
             for (var i = 0; i < maxParallelization + 1; i++)
             {
                 var task = policy.ExecuteAsync(
-                    execute: cancellationToken => WaitUtility.WaitAsUncertain(
+                    execute: cancellationToken => WaitUtility.WaitAndSucceed(
                         TimeSpan.FromSeconds(0.1d),
                         cancellationToken,
                         1),

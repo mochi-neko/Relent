@@ -9,8 +9,11 @@ using Mochineko.Resilience.CircuitBreaker;
 using Mochineko.Resilience.Retry;
 using Mochineko.Resilience.Timeout;
 using Mochineko.Resilience.Wrap;
+using Mochineko.Result;
+using Mochineko.UncertainResult;
 using Mochineko.UncertainResult.Tests;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Mochineko.Resilience.Tests
@@ -45,7 +48,12 @@ namespace Mochineko.Resilience.Tests
                 async cancellationToken => await MockWebAPI.GetAsync(httpClient, DummyUrl, cancellationToken),
                 CancellationToken.None);
 
-            result.Failure.Should().BeTrue();
+            if (result is IUncertainFailureResult<string> failure)
+            {
+                Debug.LogError(failure.Message);
+            }
+            
+            result.Retryable.Should().BeTrue();
             retryPolicy.RetryCount.Should().Be(maxRetryCount);
         }
 
@@ -73,7 +81,12 @@ namespace Mochineko.Resilience.Tests
                 async cancellationToken => await MockWebAPI.GetAsync(httpClient, DummyUrl, cancellationToken),
                 userCancellationTokenSource.Token);
             
-            result.Failure.Should().BeTrue();
+            if (result is IUncertainFailureResult<string> failure)
+            {
+                Debug.LogError(failure.Message);
+            }
+            
+            result.Retryable.Should().BeTrue();
         }
 
         [Test]
@@ -109,7 +122,12 @@ namespace Mochineko.Resilience.Tests
                 async cancellationToken => await MockWebAPI.GetAsync(httpClient, DummyUrl, cancellationToken),
                 CancellationToken.None);
 
-            result.Failure.Should().BeTrue();
+            if (result is IUncertainFailureResult<string> failure)
+            {
+                Debug.LogError(failure.Message);
+            }
+            
+            result.Retryable.Should().BeTrue();
             retryPolicy.RetryCount.Should().Be(3); // 0.2s(loop) * 3 = 0.6s < 1s(total)
         }
 
@@ -144,7 +162,12 @@ namespace Mochineko.Resilience.Tests
                 async cancellationToken => await MockWebAPI.GetAsync(httpClient, DummyUrl, cancellationToken),
                 CancellationToken.None);
 
-            result.Failure.Should().BeTrue();
+            if (result is IUncertainFailureResult<string> failure)
+            {
+                Debug.LogError(failure.Message);
+            }
+            
+            result.Retryable.Should().BeTrue();
             retryPolicy.RetryCount.Should().Be(10,
                 because: "Retry count is consumed immediately when circuit breaker is open.");
             circuitBreakerPolicy.State.Should().Be(CircuitState.Open);

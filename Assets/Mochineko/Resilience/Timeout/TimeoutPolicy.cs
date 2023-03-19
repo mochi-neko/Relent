@@ -17,7 +17,7 @@ namespace Mochineko.Resilience.Timeout
             this.timeout = timeout;
         }
         
-        public async Task<IResult<TResult>> ExecuteAsync(
+        public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
@@ -29,20 +29,21 @@ namespace Mochineko.Resilience.Timeout
             var result = await execute(linkedCancellationTokenSource.Token);
             if (result is IUncertainSuccessResult<TResult> success)
             {
-                return ResultFactory.Succeed(success.Result);
+                return UncertainResultFactory.Succeed(success.Result);
             }
             else if (result is IUncertainRetryableResult<TResult> retryable)
             {
-                return ResultFactory.Fail<TResult>(
-                    $"Timeout because result was retryable or timeout:{retryable.Message}.");
+                return UncertainResultFactory.Retry<TResult>(
+                    $"Retryable because result was retryable or timeout -> {retryable.Message}.");
             }
             else if (result is IUncertainFailureResult<TResult> failure)
             {
-                return ResultFactory.Fail<TResult>(
-                    $"Timeout because result was failure or timeout:{failure.Message}.");
+                return UncertainResultFactory.Fail<TResult>(
+                    $"Failed because result was failure or timeout -> {failure.Message}.");
             }
             else
             {
+                // Panic!
                 throw new UncertainResultPatternMatchException(nameof(result));
             }
         }

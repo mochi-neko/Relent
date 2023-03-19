@@ -7,7 +7,7 @@ namespace Mochineko.Resilience.CircuitBreaker
     {
         public static ICircuitBreakerPolicy<TResult> CircuitBreaker<TResult>(
             int failureThreshold,
-            TimeSpan breakTime)
-            => new CircuitBreakerPolicy<TResult>(failureThreshold, breakTime);
+            TimeSpan interval)
+            => new CircuitBreakerPolicy<TResult>(failureThreshold, interval);
     }
 }

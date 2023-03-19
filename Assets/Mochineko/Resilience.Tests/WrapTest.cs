@@ -31,14 +31,14 @@ namespace Mochineko.Resilience.Tests
             stopwatch.Start();
             
             var result = await policy.ExecuteAsync(
-                execute: cancellationToken => WaitUtility.WaitAndRetryAsUncertain<string>(
+                execute: cancellationToken => WaitUtility.WaitAndRetry<string>(
                     TimeSpan.FromSeconds(0.5f), // wait over timeout
                     cancellationToken),
                 cancellationToken: CancellationToken.None);
 
             stopwatch.Stop();
             
-            result.Failure.Should().BeTrue();
+            result.Retryable.Should().BeTrue();
             retry.RetryCount.Should().Be(5); // 5 = 0.5s(total) / 0.1s(each)
             stopwatch.ElapsedMilliseconds.Should().BeGreaterOrEqualTo((long)(1000 * 0.1d * 5));
         }
@@ -61,7 +61,7 @@ namespace Mochineko.Resilience.Tests
             stopWatch.Start();
 
             var result = await policy.ExecuteAsync(
-                execute: cancellationToken => WaitUtility.WaitAsUncertain<string>(
+                execute: cancellationToken => WaitUtility.WaitAndSucceed<string>(
                     TimeSpan.FromSeconds(0.5f), // wait over timeout
                     cancellationToken,
                     "Success"),
@@ -69,7 +69,7 @@ namespace Mochineko.Resilience.Tests
 
             stopWatch.Stop();
 
-            result.Failure.Should().BeTrue();
+            result.Retryable.Should().BeTrue();
             retry.RetryCount.Should().Be(10,
                 because: "CircuitBreaker is open by each timeout then retry count is consumed immediately.");
             circuitBreaker.State.Should().Be(CircuitState.Open,

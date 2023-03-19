@@ -8,7 +8,7 @@ namespace Mochineko.Resilience.Tests
 {
     internal static class WaitUtility
     {
-        public static async Task<IUncertainResult<TResult>> WaitAsUncertain<TResult>(
+        public static async Task<IUncertainResult<TResult>> WaitAndSucceed<TResult>(
             TimeSpan waitTime,
             CancellationToken cancellationToken,
             TResult successResult)
@@ -31,7 +31,7 @@ namespace Mochineko.Resilience.Tests
             }
         }
         
-        public static async Task<IUncertainResult<TResult>> WaitAndRetryAsUncertain<TResult>(
+        public static async Task<IUncertainResult<TResult>> WaitAndRetry<TResult>(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {

@@ -10,68 +10,75 @@ namespace Mochineko.Resilience.Retry
     internal sealed class RetryPolicy<TResult>
         : IRetryPolicy<TResult>
     {
-        private readonly int permittedRetryCount;
-        private readonly Func<int, TimeSpan> waitDurationProvider;
+        private readonly int maxRetryCount;
+        private readonly Func<int, TimeSpan> intervalProvider;
         
         private int retryCount;
         public int RetryCount => retryCount;
 
-        public RetryPolicy(int permittedRetryCount)
+        public RetryPolicy(int maxRetryCount)
         {
-            this.permittedRetryCount = permittedRetryCount;
-            waitDurationProvider = retryAttempt => TimeSpan.Zero;
+            this.maxRetryCount = maxRetryCount;
+            intervalProvider = _ => TimeSpan.Zero;
         }
 
-        public RetryPolicy(int permittedRetryCount, TimeSpan duration)
+        public RetryPolicy(int maxRetryCount, TimeSpan interval)
         {
-            this.permittedRetryCount = permittedRetryCount;
-            waitDurationProvider = retryAttempt => duration;
+            this.maxRetryCount = maxRetryCount;
+            intervalProvider = _ => interval;
         }
 
-        public RetryPolicy(int permittedRetryCount, Func<int, TimeSpan> durationProvider)
+        public RetryPolicy(int maxRetryCount, Func<int, TimeSpan> intervalProvider)
         {
-            this.permittedRetryCount = permittedRetryCount;
-            waitDurationProvider = durationProvider ?? throw new ArgumentNullException(nameof(durationProvider));
+            this.maxRetryCount = maxRetryCount;
+            this.intervalProvider = intervalProvider ?? throw new ArgumentNullException(nameof(intervalProvider));
         }
 
-        public async Task<IResult<TResult>> ExecuteAsync(
+        public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
             retryCount = 0;
 
-            while (retryCount < permittedRetryCount)
+            while (retryCount < maxRetryCount)
             {
                 var result = await execute.Invoke(cancellationToken);
                 if (result is IUncertainSuccessResult<TResult> success)
                 {
-                    return ResultFactory.Succeed(success.Result);
+                    return UncertainResultFactory.Succeed(success.Result);
                 }
                 else if (result is IUncertainRetryableResult<TResult> retryable)
                 {
                     retryCount++;
 
-                    var waitResult = await WaitUtility
-                        .WaitAsync(waitDurationProvider.Invoke(retryCount), cancellationToken);
-                    if (waitResult is IFailureResult cancelled)
+                    var intervalResult = await WaitUtility
+                        .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
+                    if (intervalResult is IUncertainRetryableResult cancelled)
                     {
-                        return ResultFactory.Fail<TResult>(cancelled.Message);
+                        return UncertainResultFactory.Retry<TResult>(
+                            $"Cancelled in interval at {retryCount}th retry -> {cancelled.Message}");
+                    }
+                    else if (intervalResult is IUncertainFailureResult failure)
+                    {
+                        return UncertainResultFactory.Fail<TResult>(
+                            $"Failed to wait interval because -> {failure.Message}");
                     }
                 }
                 else if (result is IUncertainFailureResult<TResult> failure)
                 {
-                    return ResultFactory.Fail<TResult>(failure.Message);
+                    return UncertainResultFactory.Fail<TResult>(
+                        $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
                 }
                 else
                 {
-                    // Unexpected
+                    // Panic!
                     throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 
-            // Over permitted retry count
-            return ResultFactory.Fail<TResult>(
-                "Failed to retry because retry count was over permitted count.");
+            // Over max retry count
+            return UncertainResultFactory.Retry<TResult>(
+                $"Retryable because retry count was over max count:{maxRetryCount}.");
         }
     }
 }

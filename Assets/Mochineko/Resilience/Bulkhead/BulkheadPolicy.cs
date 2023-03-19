@@ -20,38 +20,53 @@ namespace Mochineko.Resilience.Bulkhead
             semaphoreSlim = new SemaphoreSlim(maxParallelization, maxParallelization);
         }
         
-        public async Task<IResult<TResult>> ExecuteAsync(
+        public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
             var waitResult = await WaitUtility.WaitAsync(semaphoreSlim, cancellationToken);
-            if (waitResult is IFailureResult waitFailure)
+            if (waitResult.Success)
+            {
+                var result = await execute.Invoke(cancellationToken);
+            
+                semaphoreSlim.Release();
+            
+                if (result is IUncertainSuccessResult<TResult> success)
+                {
+                    return UncertainResultFactory.Succeed(success.Result);
+                }
+                else if (result is IUncertainRetryableResult<TResult> retryable)
+                {
+                    return UncertainResultFactory.Retry<TResult>(
+                        $"Retryable at bulkhead because -> {retryable.Message}.");
+                }
+                else if (result is IUncertainFailureResult<TResult> failure)
+                {
+                    return UncertainResultFactory.Fail<TResult>(
+                        $"Failed at bulkhead because -> {failure.Message}.");
+                }
+                else
+                {
+                    // Panic!
+                    throw new UncertainResultPatternMatchException(nameof(result));
+                }
+            }
+            if (waitResult is IUncertainRetryableResult waitRetryable)
             {
                 semaphoreSlim.Release();
-                return ResultFactory.Fail<TResult>(waitFailure.Message);
+                return UncertainResultFactory.Retry<TResult>(
+                    $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
             }
-            
-            var result = await execute.Invoke(cancellationToken);
-            
-            semaphoreSlim.Release();
-            
-            if (result is IUncertainSuccessResult<TResult> success)
+            else if (waitResult is IUncertainFailureResult waitFailure)
             {
-                return ResultFactory.Succeed(success.Result);
-            }
-            else if (result is IUncertainRetryableResult<TResult> retryable)
-            {
-                return ResultFactory.Fail<TResult>(
-                    $"Failed in bulkhead because result was retryable:{retryable.Message}.");
-            }
-            else if (result is IUncertainFailureResult<TResult> failure)
-            {
-                return ResultFactory.Fail<TResult>(
-                    $"Failed in bulkhead because result was failure:{failure.Message}.");
+                semaphoreSlim.Release();
+                return UncertainResultFactory.Fail<TResult>(
+                    $"Failed in bulkhead waiting because -> {waitFailure.Message}.");
             }
             else
             {
-                throw new UncertainResultPatternMatchException(nameof(result));
+                // Panic!
+                throw new UncertainResultPatternMatchException(nameof(waitResult));
             }
         }
     }
