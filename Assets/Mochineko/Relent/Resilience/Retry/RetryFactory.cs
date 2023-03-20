@@ -33,7 +33,7 @@ namespace Mochineko.Relent.Resilience.Retry
         /// <param name="maxRetryCount"></param>
         /// <param name="interval"></param>
         /// <returns></returns>
-        public static IRetryPolicy RetryWithWait(
+        public static IRetryPolicy RetryWithInterval(
             int maxRetryCount, TimeSpan interval)
             => new RetryPolicy(maxRetryCount, interval);
         
@@ -44,7 +44,7 @@ namespace Mochineko.Relent.Resilience.Retry
         /// <param name="interval"></param>
         /// <typeparam name="TResult">Type of result value</typeparam>
         /// <returns></returns>
-        public static IRetryPolicy<TResult> RetryWithWait<TResult>(
+        public static IRetryPolicy<TResult> RetryWithInterval<TResult>(
             int maxRetryCount, TimeSpan interval)
             => new RetryPolicy<TResult>(maxRetryCount, interval);
 

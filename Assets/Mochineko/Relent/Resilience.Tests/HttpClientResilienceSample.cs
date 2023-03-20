@@ -108,7 +108,7 @@ namespace Mochineko.Relent.Resilience.Tests
                 .Timeout<string>(TimeSpan.FromSeconds(3d));
             
             var retryPolicy = RetryFactory
-                .RetryWithWait<string>(10, TimeSpan.FromSeconds(0.1f));
+                .RetryWithInterval<string>(10, TimeSpan.FromSeconds(0.1f));
             
             var eachTimeoutPolicy = TimeoutFactory
                 .Timeout<string>(TimeSpan.FromSeconds(0.5f));

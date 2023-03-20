@@ -66,7 +66,7 @@ namespace Mochineko.Relent.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task LinearTimeRetryWithNoValueTest(int maxRetryCount, float intervalSeconds)
         {
-            IRetryPolicy policy = RetryFactory.RetryWithWait(
+            IRetryPolicy policy = RetryFactory.RetryWithInterval(
                 maxRetryCount,
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
@@ -97,7 +97,7 @@ namespace Mochineko.Relent.Resilience.Tests
         [RequiresPlayMode(false)]
         public async Task LinearTimeRetryTest(int maxRetryCount, float intervalSeconds)
         {
-            IRetryPolicy<bool> policy = RetryFactory.RetryWithWait<bool>(
+            IRetryPolicy<bool> policy = RetryFactory.RetryWithInterval<bool>(
                 maxRetryCount,
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
