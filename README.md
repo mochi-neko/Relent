@@ -18,7 +18,7 @@ This library contains these modules:
 
 - [Result](#result)
 - [Uncertain Result](#uncertain-result)
-- [Resilience](#uncertain-result)
+- [Resilience](#resilience)
 
 ## Result
 
