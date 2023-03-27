@@ -1,11 +1,14 @@
 {
   "name": "com.mochineko.relent.resilience",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "displayName": "Relent.Resilience",
   "description": "Provides resilience for an uncertain operation.",
   "unity": "2021.3",
   "author": {
     "name": "Mochineko",
     "email": "t.o.e.4315@gmail.com"
+  },
+  "dependencies": {
+    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.2"
   }
 }

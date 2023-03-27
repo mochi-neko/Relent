@@ -32,7 +32,7 @@ Add this dependency to your `Packages/manifest.json`:
 ```json
 {
   "dependencies": {
-    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.1",
+    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.2",
     ...
   }
 }
@@ -146,7 +146,7 @@ public IResult<MyObject> MyOperation()
 ```json
 {
   "dependencies": {
-    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.1",
+    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.2",
     ...
   }
 }
@@ -322,8 +322,8 @@ When you use [UncertainResult](#uncertain-result),
 ```json
 {
   "dependencies": {
-    "com.mochineko.relent.resilience": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Resilience#0.1.1",
-    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.1",
+    "com.mochineko.relent.resilience": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Resilience#0.1.2",
+    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.2",
     ...
   }
 }
@@ -389,6 +389,10 @@ See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko
 
 - [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience.Tests)
 - [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs)
+
+### Extensions
+
+- for [Newtonsoft.Json](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Extensions/Newtonsoft.Json)
 
 ## Acknowledgments
 

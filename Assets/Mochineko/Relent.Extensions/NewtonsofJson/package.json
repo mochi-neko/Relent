@@ -1,0 +1,15 @@
+{
+  "name": "com.mochineko.relent.extensions.newtonsoft-json",
+  "version": "0.1.2",
+  "displayName": "Relent extension for Newtonsoft.Json",
+  "description": "Relent extension for Newtonsoft.Json",
+  "unity": "2021.3",
+  "author": {
+    "name": "Mochineko",
+    "email": "t.o.e.4315@gmail.com"
+  },
+  "dependencies": {
+    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.2",
+    "com.unity.nuget.newtonsoft-json": "3.0.2"
+  }
+}

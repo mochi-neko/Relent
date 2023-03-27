@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
     "com.boundfoxstudios.fluentassertions": "https://github.com/BoundfoxStudios/fluentassertions-unity.git#upm",
     "com.unity.collab-proxy": "1.15.15",
     "com.unity.feature.development": "1.0.1",

@@ -1,6 +1,6 @@
 {
   "name": "com.mochineko.relent.uncertain-result",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "displayName": "Relent.UncertainResult",
   "description": "Provides an explicit error handling for an uncertain operation that can be retryable failure.",
   "unity": "2021.3",
