@@ -1,6 +1,6 @@
 {
   "name": "com.mochineko.relent.resilience",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "displayName": "Relent.Resilience",
   "description": "Provides resilience for an uncertain operation.",
   "unity": "2021.3",
