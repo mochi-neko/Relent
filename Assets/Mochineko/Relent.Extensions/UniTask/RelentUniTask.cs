@@ -22,6 +22,12 @@ namespace Mochineko.Relent.Extensions.UniTask
             PlayerLoopTiming delayTiming = PlayerLoopTiming.Update,
             CancellationToken cancellationToken = default)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ResultFactory.Fail(
+                    $"Failed because operation has been already cancelled.");
+            }
+            
             try
             {
                 await Cysharp.Threading.Tasks.UniTask.Delay(
@@ -47,6 +53,12 @@ namespace Mochineko.Relent.Extensions.UniTask
         public static async UniTask<IResult> SwitchToMainThread(
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ResultFactory.Fail(
+                    $"Failed because operation has been already cancelled.");
+            }
+            
             try
             {
                 await Cysharp.Threading.Tasks.UniTask.SwitchToMainThread(cancellationToken);
