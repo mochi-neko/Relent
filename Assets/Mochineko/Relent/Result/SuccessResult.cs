@@ -8,15 +8,18 @@ namespace Mochineko.Relent.Result
     {
         public bool Success => true;
         public bool Failure => false;
+
+        public static ISuccessResult Instance { get; }
+            = new SuccessResult();
     }
-    
+
     internal sealed class SuccessResult<TResult>
         : ISuccessResult<TResult>
     {
         public bool Success => true;
         public bool Failure => false;
         public TResult Result { get; }
-        
+
         public SuccessResult(TResult result)
         {
             Result = result ?? throw new ArgumentNullException(nameof(result));

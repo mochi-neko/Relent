@@ -11,7 +11,7 @@ namespace Mochineko.Relent.Result
         /// </summary>
         /// <returns></returns>
         public static ISuccessResult Succeed()
-            => new SuccessResult();
+            => SuccessResult.Instance;
         
         /// <summary>
         /// Creates a <see cref="IFailureResult"/> with message.

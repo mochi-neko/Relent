@@ -11,8 +11,8 @@ namespace Mochineko.Relent.UncertainResult
         /// </summary>
         /// <returns></returns>
         public static IUncertainSuccessResult Succeed()
-            => new UncertainSuccessResult();
-        
+            => UncertainSuccessResult.Instance;
+
         /// <summary>
         /// Creates a <see cref="IUncertainRetryableResult"/> with a message.
         /// </summary>
@@ -20,7 +20,7 @@ namespace Mochineko.Relent.UncertainResult
         /// <returns></returns>
         public static IUncertainRetryableResult Retry(string message)
             => new UncertainRetryableResult(message);
-        
+
         /// <summary>
         /// Creates a <see cref="IUncertainFailureResult"/> with a message.
         /// </summary>
@@ -28,7 +28,7 @@ namespace Mochineko.Relent.UncertainResult
         /// <returns></returns>
         public static IUncertainFailureResult Fail(string message)
             => new UncertainFailureResult(message);
-        
+
         /// <summary>
         /// Creates a <see cref="IUncertainSuccessResult{TResult}"/> with a value.
         /// </summary>
