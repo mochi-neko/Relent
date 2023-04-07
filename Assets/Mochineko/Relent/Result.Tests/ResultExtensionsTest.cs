@@ -1,0 +1,126 @@
+#nullable enable
+using System;
+using FluentAssertions;
+using NUnit.Framework;
+using UnityEngine.TestTools;
+
+namespace Mochineko.Relent.Result.Tests
+{
+    [TestFixture]
+    internal sealed class ResultExtensionsTest
+    {
+        [Test]
+        [RequiresPlayMode(false)]
+        public void UnwrapShouldSuccessForSuccessResult()
+        {
+            IResult<int> result = ResultFactory.Succeed(1);
+
+            result.Unwrap().Should().Be(1);
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void UnwrapShouldFailForFailureResult()
+        {
+            Func<int> unwrap = ResultFactory.Fail<int>("Fail").Unwrap;
+
+            unwrap.Should().Throw<InvalidOperationException>();
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void ExtractMessageShouldSuccessForFailureResult()
+        {
+            IResult<int> result = ResultFactory.Fail<int>("message");
+
+            result.ExtractMessage().Should().Be("message");
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void ExtractMessageShouldFailForSuccessResult()
+        {
+            Func<string> extract = () => ResultFactory.Succeed(1).ExtractMessage();
+
+            extract.Should().Throw<InvalidOperationException>();
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void ToResultShouldHoldValue()
+        {
+            var value = 1;
+            var result = value.ToResult();
+            result.Unwrap().Should().Be(value);
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TryExtensionShouldSuccessWithNoException()
+        {
+            var result = ResultExtensions.Try<int, NullReferenceException>(()
+                => 1);
+
+            result.Unwrap().Should().Be(1);
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TryExtensionShouldCatchSpecifiedException()
+        {
+            var result = ResultExtensions.Try<NullReferenceException>(()
+                => throw new NullReferenceException());
+
+            result.Failure.Should().BeTrue();
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TryExtensionShouldNotCatchNoSpecifiedException()
+        {
+            Func<IResult> tryExtension = () => ResultExtensions.Try<NullReferenceException>(()
+                => throw new InvalidCastException());
+
+            tryExtension.Should().Throw<InvalidCastException>();
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TryExtensionShouldCatchSpecifiedMultipleExceptions()
+        {
+            var result = ResultExtensions.Try<NullReferenceException, ArgumentOutOfRangeException>(()
+                => throw new ArgumentOutOfRangeException());
+
+            result.Failure.Should().BeTrue();
+        }
+        
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TryExtensionShouldExecuteFinalizer()
+        {
+            var finalized = false;
+            var result = ResultExtensions.Try<NullReferenceException>(()
+                => throw new NullReferenceException(),
+                finalizer: () => finalized = true);
+
+            result.Failure.Should().BeTrue();
+            finalized.Should().BeTrue();
+        }
+
+        [Test]
+        [RequiresPlayMode(false)]
+        public void TraceFailureShouldStackMessages()
+        {
+            var result1 = ResultExtensions.FailWithTrace<float>("message1.");
+            var result2 = result1.Trace("message2.");
+            var result3 = result2.Trace("message3.");
+            var result4 = result3.Trace("message4.");
+
+            result4.ExtractMessage()
+                .Should().Be("message1.\n" +
+                             "message2.\n" +
+                             "message3.\n" +
+                             "message4.\n");
+        }
+    }
+}
