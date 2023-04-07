@@ -7,8 +7,8 @@ namespace Mochineko.Relent.UncertainResult
         : IUncertainTraceRetryableResult
     {
         public bool Success => false;
-        public bool Retryable => false;
-        public bool Failure => true;
+        public bool Retryable => true;
+        public bool Failure => false;
         public string Message => trace.ToString();
 
         private readonly StringBuilder trace = new();
@@ -28,8 +28,8 @@ namespace Mochineko.Relent.UncertainResult
         : IUncertainTraceRetryableResult<TResult>
     {
         public bool Success => false;
-        public bool Retryable => false;
-        public bool Failure => true;
+        public bool Retryable => true;
+        public bool Failure => false;
         public string Message => trace.ToString();
 
         private readonly StringBuilder trace = new();

@@ -23,11 +23,6 @@ namespace Mochineko.Relent.Resilience.Tests
                 return UncertainResultFactory.Retry(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail(
-                    $"Cancelled to wait because of unhandled exception:{exception}.");
-            }
         }
         
         public static async Task<IUncertainResult<TResult>> WaitAndSucceed<TResult>(
@@ -45,11 +40,6 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 return UncertainResultFactory.Retry<TResult>(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
-            }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail<TResult>(
-                    $"Cancelled to wait because of unhandled exception:{exception}.");
             }
         }
         
@@ -69,11 +59,6 @@ namespace Mochineko.Relent.Resilience.Tests
                 return UncertainResultFactory.Retry(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail(
-                    $"Cancelled to wait because of unhandled exception:{exception}.");
-            }
         }
         
         public static async Task<IUncertainResult<TResult>> WaitAndRetry<TResult>(
@@ -91,11 +76,6 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 return UncertainResultFactory.Retry<TResult>(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
-            }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail<TResult>(
-                    $"Cancelled to wait because of unhandled exception:{exception}.");
             }
         }
     }

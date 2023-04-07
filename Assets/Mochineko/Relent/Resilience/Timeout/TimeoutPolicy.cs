@@ -10,82 +10,108 @@ namespace Mochineko.Relent.Resilience.Timeout
         : ITimeoutPolicy
     {
         private readonly TimeSpan timeout;
-        
+
         public TimeoutPolicy(TimeSpan timeout)
         {
             this.timeout = timeout;
         }
-        
+
         public async Task<IUncertainResult> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             using var timeoutCancellationTokenSource = new CancellationTokenSource(timeout);
             using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken,
                 timeoutCancellationTokenSource.Token);
 
             var result = await execute(linkedCancellationTokenSource.Token);
-            if (result is IUncertainSuccessResult success)
+            var reason = timeoutCancellationTokenSource.IsCancellationRequested
+                ? "timeout"
+                : "retryable";
+            switch (result)
             {
-                return success;
-            }
-            else if (result is IUncertainRetryableResult retryable)
-            {
-                return UncertainResultFactory.Retry(
-                    $"Retryable because result was retryable or timeout -> {retryable.Message}.");
-            }
-            else if (result is IUncertainFailureResult failure)
-            {
-                return UncertainResultFactory.Fail(
-                    $"Failed because result was failure or timeout -> {failure.Message}.");
-            }
-            else
-            {
-                // Panic!
-                throw new UncertainResultPatternMatchException(nameof(result));
+                case IUncertainSuccessResult success:
+                    return success;
+
+                case IUncertainTraceRetryableResult traceRetryable:
+                    return traceRetryable.Trace(
+                        $"Retryable timeout because result was {reason}.");
+
+                case IUncertainRetryableResult retryable:
+                    return UncertainResultExtensions.RetryWithTrace(
+                        $"Retryable timeout because result was {reason} -> {retryable.Message}.");
+
+                case IUncertainTraceFailureResult traceFailure:
+                    return traceFailure.Trace(
+                        $"Failed timeout because result was failure or timeout.");
+
+                case IUncertainFailureResult failure:
+                    return UncertainResultExtensions.FailWithTrace(
+                        $"Failed timeout because -> {failure.Message}.");
+
+                default:
+                    // Panic!
+                    throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
     }
-    
+
     internal sealed class TimeoutPolicy<TResult>
         : ITimeoutPolicy<TResult>
     {
         private readonly TimeSpan timeout;
-        
+
         public TimeoutPolicy(TimeSpan timeout)
         {
             this.timeout = timeout;
         }
-        
+
         public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                    $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             using var timeoutCancellationTokenSource = new CancellationTokenSource(timeout);
             using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken,
                 timeoutCancellationTokenSource.Token);
 
             var result = await execute(linkedCancellationTokenSource.Token);
-            if (result is IUncertainSuccessResult<TResult> success)
+            var reason = timeoutCancellationTokenSource.IsCancellationRequested
+                ? "timeout"
+                : "retryable";
+            switch (result)
             {
-                return success;
-            }
-            else if (result is IUncertainRetryableResult<TResult> retryable)
-            {
-                return UncertainResultFactory.Retry<TResult>(
-                    $"Retryable because result was retryable or timeout -> {retryable.Message}.");
-            }
-            else if (result is IUncertainFailureResult<TResult> failure)
-            {
-                return UncertainResultFactory.Fail<TResult>(
-                    $"Failed because result was failure or timeout -> {failure.Message}.");
-            }
-            else
-            {
-                // Panic!
-                throw new UncertainResultPatternMatchException(nameof(result));
+                case IUncertainSuccessResult<TResult> success:
+                    return success;
+
+                case IUncertainTraceRetryableResult<TResult> traceRetryable:
+                    return traceRetryable.Trace(
+                        $"Retryable timeout because result was {reason}.");
+
+                case IUncertainRetryableResult<TResult> retryable:
+                    return UncertainResultFactory.Retry<TResult>(
+                        $"Retryable timeout because result was {reason} -> {retryable.Message}.");
+
+                case IUncertainFailureResult<TResult> failure:
+                    return UncertainResultFactory.Fail<TResult>(
+                        $"Failed timeout because -> {failure.Message}.");
+
+                default:
+                    // Panic!
+                    throw new UncertainResultPatternMatchException(nameof(result));
             }
         }
     }

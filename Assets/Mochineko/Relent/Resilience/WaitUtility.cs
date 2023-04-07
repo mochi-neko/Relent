@@ -29,13 +29,8 @@ namespace Mochineko.Relent.Resilience
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry(
-                    $"Cancelled to wait delay because operation was cancelled with exception:{exception}.");
-            }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail(
-                    $"Failed to wait delay because of an unhandled exception:{exception}.");
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled to wait delay because operation was cancelled because of {exception}.");
             }
         }
 
@@ -57,13 +52,8 @@ namespace Mochineko.Relent.Resilience
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry(
-                    $"Cancelled to wait semaphore because operation was cancelled with exception:{exception}.");
-            }
-            catch (Exception exception)
-            {
-                return UncertainResultFactory.Fail(
-                    $"Failed to wait semaphore because of unhandled exception:{exception}.");
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled to wait semaphore because operation was cancelled because of:{exception}.");
             }
         }
     }

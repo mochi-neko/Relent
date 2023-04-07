@@ -11,24 +11,25 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
     {
         private readonly int failureThreshold;
         private readonly TimeSpan interval;
-        
+
         private readonly object lockObject = new();
-        
+
         private CircuitState state;
         public CircuitState State => state;
         private int failureCount;
         private DateTime lastFailureTime;
-        
+
         public CircuitBreakerPolicy(int failureThreshold, TimeSpan interval)
         {
             if (failureThreshold <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(failureThreshold));;
+                throw new ArgumentOutOfRangeException(nameof(failureThreshold));
+                ;
             }
-            
+
             this.failureThreshold = failureThreshold;
             this.interval = interval;
-            
+
             state = CircuitState.Closed;
             failureCount = 0;
             lastFailureTime = DateTime.MinValue;
@@ -42,7 +43,7 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
                 state = CircuitState.Closed;
             }
         }
-        
+
         private void TrackFailure()
         {
             lock (lockObject)
@@ -60,8 +61,8 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
         private bool CanCloseHalf
             => state is CircuitState.Open
-            && DateTime.Now - lastFailureTime >= interval;
-        
+               && DateTime.Now - lastFailureTime >= interval;
+
         private void CloseHalf()
         {
             lock (lockObject)
@@ -82,79 +83,91 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
             Func<CancellationToken, Task<IUncertainResult>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled before circuit breaker because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             if (state is CircuitState.Isolated)
             {
-                return UncertainResultFactory.Fail(
+                return UncertainResultExtensions.FailWithTrace(
                     "Failed because circuit breaker is manually isolated.");
             }
-            
+
             if (CanCloseHalf)
             {
                 CloseHalf();
             }
-            
+
             if (state is CircuitState.Open)
             {
-                return UncertainResultFactory.Retry(
+                return UncertainResultExtensions.RetryWithTrace(
                     $"Retryable because circuit breaker is open by over threshold failure:{failureThreshold}.");
             }
             else // Closed or HalfOpen
             {
                 var result = await execute.Invoke(cancellationToken);
-                
-                if (result is IUncertainSuccessResult success)
+
+                switch (result)
                 {
-                    if (state is CircuitState.HalfOpen)
+                    case IUncertainSuccessResult success:
                     {
-                        Close();
+                        if (state is CircuitState.HalfOpen)
+                        {
+                            Close();
+                        }
+
+                        return success;
                     }
-                    
-                    return success;
-                }
-                else if (result is IUncertainRetryableResult retryable)
-                {
-                    TrackFailure();
-                    
-                    return UncertainResultFactory.Retry(
-                        $"Retryable at circuit breaker because -> {retryable.Message}.");
-                }
-                else if (result is IUncertainFailureResult failure)
-                {
-                    return UncertainResultFactory.Fail(
-                        $"Failed at circuit breaker because -> {failure.Message}.");
-                }
-                else
-                {
-                    // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
+
+                    case IUncertainTraceRetryableResult traceRetryable:
+                        TrackFailure();
+                        return traceRetryable.Trace($"Retryable at circuit breaker.");
+
+                    case IUncertainRetryableResult retryable:
+                        TrackFailure();
+                        return UncertainResultExtensions.RetryWithTrace(
+                            $"Retryable at circuit breaker because -> {retryable.Message}.");
+
+                    case IUncertainTraceFailureResult traceFailure:
+                        return traceFailure.Trace($"Failed at circuit breaker.");
+
+                    case IUncertainFailureResult failure:
+                        return UncertainResultExtensions.FailWithTrace(
+                            $"Failed at circuit breaker because -> {failure.Message}.");
+
+                    default:
+                        // Panic!
+                        throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
         }
     }
-    
+
     internal sealed class CircuitBreakerPolicy<TResult>
         : ICircuitBreakerPolicy<TResult>
     {
         private readonly int failureThreshold;
         private readonly TimeSpan interval;
-        
+
         private readonly object lockObject = new();
-        
+
         private CircuitState state;
         public CircuitState State => state;
         private int failureCount;
         private DateTime lastFailureTime;
-        
+
         public CircuitBreakerPolicy(int failureThreshold, TimeSpan interval)
         {
             if (failureThreshold <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(failureThreshold));;
+                throw new ArgumentOutOfRangeException(nameof(failureThreshold));
             }
-            
+
             this.failureThreshold = failureThreshold;
             this.interval = interval;
-            
+
             state = CircuitState.Closed;
             failureCount = 0;
             lastFailureTime = DateTime.MinValue;
@@ -168,7 +181,7 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
                 state = CircuitState.Closed;
             }
         }
-        
+
         private void TrackFailure()
         {
             lock (lockObject)
@@ -186,8 +199,8 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
         private bool CanCloseHalf
             => state is CircuitState.Open
-            && DateTime.Now - lastFailureTime >= interval;
-        
+               && DateTime.Now - lastFailureTime >= interval;
+
         private void CloseHalf()
         {
             lock (lockObject)
@@ -208,51 +221,63 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                    $"Cancelled before circuit breaker because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             if (state is CircuitState.Isolated)
             {
-                return UncertainResultFactory.Fail<TResult>(
+                return UncertainResultExtensions.FailWithTrace<TResult>(
                     "Failed because circuit breaker is manually isolated.");
             }
-            
+
             if (CanCloseHalf)
             {
                 CloseHalf();
             }
-            
+
             if (state is CircuitState.Open)
             {
-                return UncertainResultFactory.Retry<TResult>(
+                return UncertainResultExtensions.RetryWithTrace<TResult>(
                     $"Retryable because circuit breaker is open by over threshold failure:{failureThreshold}.");
             }
             else // Closed or HalfOpen
             {
                 var result = await execute.Invoke(cancellationToken);
-                
-                if (result is IUncertainSuccessResult<TResult> success)
+
+                switch (result)
                 {
-                    if (state is CircuitState.HalfOpen)
+                    case IUncertainSuccessResult<TResult> success:
                     {
-                        Close();
+                        if (state is CircuitState.HalfOpen)
+                        {
+                            Close();
+                        }
+
+                        return success;
                     }
-                    
-                    return success;
-                }
-                else if (result is IUncertainRetryableResult<TResult> retryable)
-                {
-                    TrackFailure();
-                    
-                    return UncertainResultFactory.Retry<TResult>(
-                        $"Retryable at circuit breaker because -> {retryable.Message}.");
-                }
-                else if (result is IUncertainFailureResult<TResult> failure)
-                {
-                    return UncertainResultFactory.Fail<TResult>(
-                        $"Failed at circuit breaker because -> {failure.Message}.");
-                }
-                else
-                {
-                    // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
+
+                    case IUncertainTraceRetryableResult<TResult> traceRetryable:
+                        TrackFailure();
+                        return traceRetryable.Trace($"Retryable at circuit breaker.");
+
+                    case IUncertainRetryableResult<TResult> retryable:
+                        TrackFailure();
+                        return UncertainResultExtensions.RetryWithTrace<TResult>(
+                            $"Retryable at circuit breaker because -> {retryable.Message}.");
+
+                    case IUncertainTraceFailureResult<TResult> traceFailure:
+                        return traceFailure.Trace($"Failed at circuit breaker.");
+
+                    case IUncertainFailureResult<TResult> failure:
+                        return UncertainResultExtensions.FailWithTrace<TResult>(
+                            $"Failed at circuit breaker because -> {failure.Message}.");
+
+                    default:
+                        // Panic!
+                        throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
         }

@@ -13,63 +13,63 @@ namespace Mochineko.Relent.Resilience.Bulkhead
 
         public int RemainingParallelizationCount
             => semaphoreSlim.CurrentCount;
-        
+
         public BulkheadPolicy(int maxParallelization)
         {
             semaphoreSlim = new SemaphoreSlim(maxParallelization, maxParallelization);
         }
-        
+
         public async Task<IUncertainResult> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled before bulkhead because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             var waitResult = await WaitUtility.WaitAsync(semaphoreSlim, cancellationToken);
-            if (waitResult.Success)
+            switch (waitResult)
             {
-                var result = await execute.Invoke(cancellationToken);
-            
-                semaphoreSlim.Release();
-            
-                if (result is IUncertainSuccessResult success)
+                case IUncertainSuccessResult:
                 {
-                    return success;
+                    var result = await execute.Invoke(cancellationToken);
+
+                    semaphoreSlim.Release();
+
+                    return result switch
+                    {
+                        IUncertainSuccessResult success => success,
+
+                        IUncertainTraceRetryableResult traceRetryable =>
+                            traceRetryable.Trace($"Retryable at bulkhead."),
+
+                        IUncertainRetryableResult retryable => UncertainResultExtensions.RetryWithTrace(
+                            $"Retryable at bulkhead because -> {retryable.Message}."),
+
+                        IUncertainTraceFailureResult traceFailure => traceFailure.Trace($"Failed at bulkhead."),
+
+                        IUncertainFailureResult failure => UncertainResultFactory.Fail(
+                            $"Failed at bulkhead because -> {failure.Message}."),
+
+                        _ => throw new UncertainResultPatternMatchException(nameof(result))
+                    };
                 }
-                else if (result is IUncertainRetryableResult retryable)
-                {
-                    return UncertainResultFactory.Retry(
-                        $"Retryable at bulkhead because -> {retryable.Message}.");
-                }
-                else if (result is IUncertainFailureResult failure)
-                {
-                    return UncertainResultFactory.Fail(
-                        $"Failed at bulkhead because -> {failure.Message}.");
-                }
-                else
-                {
+
+                case IUncertainTraceRetryableResult waitRetryable:
+                    semaphoreSlim.Release();
+                    return waitRetryable.Trace(
+                        $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
+
+                default:
+                    semaphoreSlim.Release();
                     // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
-                }
-            }
-            if (waitResult is IUncertainRetryableResult waitRetryable)
-            {
-                semaphoreSlim.Release();
-                return UncertainResultFactory.Retry(
-                    $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
-            }
-            else if (waitResult is IUncertainFailureResult waitFailure)
-            {
-                semaphoreSlim.Release();
-                return UncertainResultFactory.Fail(
-                    $"Failed in bulkhead waiting because -> {waitFailure.Message}.");
-            }
-            else
-            {
-                // Panic!
-                throw new UncertainResultPatternMatchException(nameof(waitResult));
+                    throw new UncertainResultPatternMatchException(nameof(waitResult));
             }
         }
     }
-    
+
     internal sealed class BulkheadPolicy<TResult>
         : IBulkheadPolicy<TResult>
     {
@@ -77,59 +77,65 @@ namespace Mochineko.Relent.Resilience.Bulkhead
 
         public int RemainingParallelizationCount
             => semaphoreSlim.CurrentCount;
-        
+
         public BulkheadPolicy(int maxParallelization)
         {
             semaphoreSlim = new SemaphoreSlim(maxParallelization, maxParallelization);
         }
-        
+
         public async Task<IUncertainResult<TResult>> ExecuteAsync(
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                    $"Cancelled before bulkhead because of {nameof(cancellationToken)} is cancelled.");
+            }
+
             var waitResult = await WaitUtility.WaitAsync(semaphoreSlim, cancellationToken);
-            if (waitResult.Success)
+            switch (waitResult)
             {
-                var result = await execute.Invoke(cancellationToken);
-            
-                semaphoreSlim.Release();
-            
-                if (result is IUncertainSuccessResult<TResult> success)
+                case IUncertainSuccessResult:
                 {
-                    return success;
+                    var result = await execute.Invoke(cancellationToken);
+
+                    semaphoreSlim.Release();
+
+                    switch (result)
+                    {
+                        case IUncertainSuccessResult<TResult> success:
+                            return success;
+
+                        case IUncertainTraceRetryableResult<TResult> traceRetryable:
+                            return traceRetryable.Trace($"Retryable at bulkhead.");
+
+                        case IUncertainRetryableResult<TResult> retryable:
+                            return UncertainResultFactory.Retry<TResult>(
+                                $"Retryable at bulkhead because -> {retryable.Message}.");
+
+                        case IUncertainTraceFailureResult<TResult> traceFailure:
+                            return traceFailure.Trace($"Failed at bulkhead.");
+
+                        case IUncertainFailureResult<TResult> failure:
+                            return UncertainResultFactory.Fail<TResult>(
+                                $"Failed at bulkhead because -> {failure.Message}.");
+
+                        default:
+                            // Panic!
+                            throw new UncertainResultPatternMatchException(nameof(result));
+                    }
                 }
-                else if (result is IUncertainRetryableResult<TResult> retryable)
-                {
+
+                case IUncertainTraceRetryableResult waitRetryable:
+                    semaphoreSlim.Release();
                     return UncertainResultFactory.Retry<TResult>(
-                        $"Retryable at bulkhead because -> {retryable.Message}.");
-                }
-                else if (result is IUncertainFailureResult<TResult> failure)
-                {
-                    return UncertainResultFactory.Fail<TResult>(
-                        $"Failed at bulkhead because -> {failure.Message}.");
-                }
-                else
-                {
+                        $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
+
+                default:
+                    semaphoreSlim.Release();
                     // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
-                }
-            }
-            if (waitResult is IUncertainRetryableResult waitRetryable)
-            {
-                semaphoreSlim.Release();
-                return UncertainResultFactory.Retry<TResult>(
-                    $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
-            }
-            else if (waitResult is IUncertainFailureResult waitFailure)
-            {
-                semaphoreSlim.Release();
-                return UncertainResultFactory.Fail<TResult>(
-                    $"Failed in bulkhead waiting because -> {waitFailure.Message}.");
-            }
-            else
-            {
-                // Panic!
-                throw new UncertainResultPatternMatchException(nameof(waitResult));
+                    throw new UncertainResultPatternMatchException(nameof(waitResult));
             }
         }
     }

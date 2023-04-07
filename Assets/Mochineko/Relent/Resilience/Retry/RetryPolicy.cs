@@ -11,7 +11,7 @@ namespace Mochineko.Relent.Resilience.Retry
     {
         private readonly int maxRetryCount;
         private readonly Func<int, TimeSpan> intervalProvider;
-        
+
         private int retryCount;
         public int RetryCount => retryCount;
 
@@ -37,56 +37,77 @@ namespace Mochineko.Relent.Resilience.Retry
             Func<CancellationToken, Task<IUncertainResult>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
+            }
+            
             retryCount = 0;
 
             while (retryCount < maxRetryCount)
             {
                 var result = await execute.Invoke(cancellationToken);
-                if (result is IUncertainSuccessResult success)
+                switch (result)
                 {
-                    return success;
-                }
-                else if (result is IUncertainRetryableResult retryable)
-                {
-                    retryCount++;
+                    case IUncertainSuccessResult success:
+                        return success;
 
-                    var intervalResult = await WaitUtility
-                        .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
-                    if (intervalResult is IUncertainRetryableResult cancelled)
+                    case IUncertainTraceRetryableResult traceRetryable:
                     {
-                        return UncertainResultFactory.Retry(
-                            $"Cancelled in interval at {retryCount}th retry -> {cancelled.Message}");
+                        retryCount++;
+
+                        var intervalResult = await WaitUtility
+                            .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
+                        if (intervalResult is IUncertainRetryableResult cancelled)
+                        {
+                            return traceRetryable.Trace(
+                                $"Cancelled in interval at {retryCount}th retry because of {cancelled.Message}");
+                        }
+
+                        break;
                     }
-                    else if (intervalResult is IUncertainFailureResult failure)
+
+                    case IUncertainRetryableResult:
                     {
-                        return UncertainResultFactory.Fail(
-                            $"Failed to wait interval because -> {failure.Message}");
+                        retryCount++;
+
+                        var intervalResult = await WaitUtility
+                            .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
+                        if (intervalResult is IUncertainTraceRetryableResult cancelled)
+                        {
+                            return cancelled.Trace(
+                                $"Cancelled in interval at {retryCount}th retry.");
+                        }
+
+                        break;
                     }
-                }
-                else if (result is IUncertainFailureResult failure)
-                {
-                    return UncertainResultFactory.Fail(
-                        $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
-                }
-                else
-                {
-                    // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
+
+                    case IUncertainTraceFailureResult traceFailure:
+                        return traceFailure.Trace($"Failed to retry at {retryCount}th retry.");
+
+                    case IUncertainFailureResult failure:
+                        return UncertainResultExtensions.FailWithTrace(
+                            $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
+
+                    default:
+                        // Panic!
+                        throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 
             // Over max retry count
-            return UncertainResultFactory.Retry(
+            return UncertainResultExtensions.RetryWithTrace(
                 $"Retryable because retry count was over max count:{maxRetryCount}.");
         }
     }
-    
+
     internal sealed class RetryPolicy<TResult>
         : IRetryPolicy<TResult>
     {
         private readonly int maxRetryCount;
         private readonly Func<int, TimeSpan> intervalProvider;
-        
+
         private int retryCount;
         public int RetryCount => retryCount;
 
@@ -112,46 +133,68 @@ namespace Mochineko.Relent.Resilience.Retry
             Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                    $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
+            }
+            
             retryCount = 0;
 
             while (retryCount < maxRetryCount)
             {
                 var result = await execute.Invoke(cancellationToken);
-                if (result is IUncertainSuccessResult<TResult> success)
+                switch (result)
                 {
-                    return success;
-                }
-                else if (result is IUncertainRetryableResult<TResult> retryable)
-                {
-                    retryCount++;
+                    case IUncertainSuccessResult<TResult> success:
+                        return success;
 
-                    var intervalResult = await WaitUtility
-                        .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
-                    if (intervalResult is IUncertainRetryableResult cancelled)
+                    case IUncertainTraceRetryableResult<TResult> traceRetryable:
                     {
-                        return UncertainResultFactory.Retry<TResult>(
-                            $"Cancelled in interval at {retryCount}th retry -> {cancelled.Message}");
+                        retryCount++;
+
+                        var intervalResult = await WaitUtility
+                            .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
+                        if (intervalResult is IUncertainTraceRetryableResult cancelled)
+                        {
+                            return traceRetryable.Trace(
+                                $"Cancelled in interval at {retryCount}th retry because of {cancelled.Message}.");
+                        }
+
+                        break;
                     }
-                    else if (intervalResult is IUncertainFailureResult failure)
+
+                    case IUncertainRetryableResult<TResult>:
                     {
-                        return UncertainResultFactory.Fail<TResult>(
-                            $"Failed to wait interval because -> {failure.Message}");
+                        retryCount++;
+
+                        var intervalResult = await WaitUtility
+                            .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
+                        if (intervalResult is IUncertainTraceRetryableResult cancelled)
+                        {
+                            return UncertainResultExtensions.RetryWithTrace<TResult>(
+                                $"Cancelled in interval at {retryCount}th retry -> {cancelled.Message}.");
+                        }
+
+                        break;
                     }
-                }
-                else if (result is IUncertainFailureResult<TResult> failure)
-                {
-                    return UncertainResultFactory.Fail<TResult>(
-                        $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
-                }
-                else
-                {
-                    // Panic!
-                    throw new UncertainResultPatternMatchException(nameof(result));
+
+                    case IUncertainTraceFailureResult<TResult> traceFailure:
+                        return traceFailure.Trace(
+                            $"Failed to retry at {retryCount}th retry.");
+
+                    case IUncertainFailureResult<TResult> failure:
+                        return UncertainResultExtensions.FailWithTrace<TResult>(
+                            $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
+
+                    default:
+                        // Panic!
+                        throw new UncertainResultPatternMatchException(nameof(result));
                 }
             }
 
             // Over max retry count
-            return UncertainResultFactory.Retry<TResult>(
+            return UncertainResultExtensions.RetryWithTrace<TResult>(
                 $"Retryable because retry count was over max count:{maxRetryCount}.");
         }
     }
