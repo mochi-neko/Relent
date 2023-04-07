@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using Mochineko.Relent.Result;
 using Newtonsoft.Json;
 
@@ -40,15 +39,10 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
                         $"Failed to serialize because serialized JSON of {typeof(T)} was null or empty.");
                 }
             }
-            catch (JsonSerializationException exception)
+            catch (JsonException exception)
             {
                 return ResultFactory.Fail<string>(
-                    $"Failed to serialize {typeof(T)} to JSON because -> {exception}");
-            }
-            catch (Exception exception)
-            {
-                return ResultFactory.Fail<string>(
-                    $"Failed to serialize {typeof(T)} to JSON because unhandled exception -> {exception}");
+                    $"Failed to serialize {typeof(T)} to JSON because of {exception}.");
             }
         }
 
@@ -85,20 +79,10 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
                         $"Failed to deserialize because deserialized object of {typeof(T)} was null.");
                 }
             }
-            catch (JsonSerializationException exception)
+            catch (JsonException exception)
             {
                 return ResultFactory.Fail<T>(
-                    $"Failed to deserialize {typeof(T)} from JSON because -> {exception}");
-            }
-            catch (JsonReaderException exception)
-            {
-                return ResultFactory.Fail<T>(
-                    $"Failed to deserialize {typeof(T)} from JSON because -> {exception}");
-            }
-            catch (Exception exception)
-            {
-                return ResultFactory.Fail<T>(
-                    $"Failed to deserialize {typeof(T)} from JSON because unhandled exception -> {exception}");
+                    $"Failed to deserialize {typeof(T)} from JSON because of {exception}.");
             }
         }
     }
