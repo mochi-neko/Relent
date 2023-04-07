@@ -56,59 +56,6 @@ namespace Mochineko.Relent.Result.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryExtensionShouldSuccessWithNoException()
-        {
-            var result = ResultExtensions.Try<int, NullReferenceException>(()
-                => 1);
-
-            result.Unwrap().Should().Be(1);
-        }
-
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TryExtensionShouldCatchSpecifiedException()
-        {
-            var result = ResultExtensions.Try<NullReferenceException>(()
-                => throw new NullReferenceException());
-
-            result.Failure.Should().BeTrue();
-        }
-
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TryExtensionShouldNotCatchNoSpecifiedException()
-        {
-            Func<IResult> tryExtension = () => ResultExtensions.Try<NullReferenceException>(()
-                => throw new InvalidCastException());
-
-            tryExtension.Should().Throw<InvalidCastException>();
-        }
-
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TryExtensionShouldCatchSpecifiedMultipleExceptions()
-        {
-            var result = ResultExtensions.Try<NullReferenceException, ArgumentOutOfRangeException>(()
-                => throw new ArgumentOutOfRangeException());
-
-            result.Failure.Should().BeTrue();
-        }
-        
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TryExtensionShouldExecuteFinalizer()
-        {
-            var finalized = false;
-            var result = ResultExtensions.Try<NullReferenceException>(()
-                => throw new NullReferenceException(),
-                finalizer: () => finalized = true);
-
-            result.Failure.Should().BeTrue();
-            finalized.Should().BeTrue();
-        }
-
-        [Test]
-        [RequiresPlayMode(false)]
         public void TraceFailureShouldStackMessages()
         {
             var result1 = ResultExtensions.FailWithTrace<float>("message1.");
