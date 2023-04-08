@@ -370,7 +370,7 @@ See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko
 
 ### Extensions
 
-- for [Newtonsoft.Json](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Extensions/Newtonsoft.Json)
+- for [Newtonsoft.Json](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Extensions/NewtonsoftJson)
 - for [UniTask](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Extensions/UniTask)
 
 ## Acknowledgments
