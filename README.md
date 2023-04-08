@@ -20,7 +20,8 @@ Add this dependency to your `Packages/manifest.json`:
 {
   "dependencies": {
     "com.mochineko.relent": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent#0.2.0",
-    ...
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask", 
+   ...
   }
 }
 ```
