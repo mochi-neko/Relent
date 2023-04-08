@@ -132,8 +132,8 @@ public IResult<MyObject> MyOperation()
 
 ### Samples
 
-- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Result.Tests)
-- [Sample](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Result.Tests/ResultSample.cs)
+- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Result.Tests)
+- [Sample](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Result.Tests/ResultSample.cs)
 
 ## Uncertain Result
 
@@ -281,17 +281,17 @@ public IResult<MyObject> MyOperation()
 
 ### Samples
 
-- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/UncertainResult.Tests)
-- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/HttpClientTest.cs)
-  - [A sample of a WebAPI communication implementation](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/MockWebAPI.cs) 
-- [Sample with a result what you define](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/UserDefinedUncertainResultSample.cs)
+- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.UncertainResult.Tests)
+- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.UncertainResult.Tests/HttpClientTest.cs)
+  - [A sample of a WebAPI communication implementation](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.UncertainResult.Tests/MockWebAPI.cs) 
+- [Sample with a result what you define](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.UncertainResult.Tests/UserDefinedUncertainResultSample.cs)
 
 ## Resilience
 
 [Resilience](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience)
  is a module that provides resilience for an uncertain operation
  caused by unpredictable factors,
- e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs).
+ e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/HttpClientResilienceSample.cs).
 
 It depends on [UncertainResult](#uncertain-result).
 
@@ -329,7 +329,7 @@ The retry policy is a policy that retries an operation
  when the operation returns an uncertain result
  that can cast `IUncertainRetryResult`.
 
-See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/RetryTest.cs).
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/RetryTest.cs).
 
 #### Timeout
 
@@ -337,7 +337,7 @@ The timeout policy is a policy
  that cancels an operation
  when the operation takes too long.
 
-See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/TimeoutTest.cs).
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/TimeoutTest.cs).
 
 #### Circuit Breaker
 
@@ -346,7 +346,7 @@ The circuit breaker policy is a policy
  when the operation returns continuous uncertain results
  that can cast `IUncertainRetryResult`.
 
-See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/CircuitBreakerTest.cs).
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/CircuitBreakerTest.cs).
 
 #### Bulkhead
 
@@ -354,19 +354,19 @@ The bulkhead policy is a policy
  that limits the number of operations
  that can be executed at the same time.
 
-See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/BulkheadTest.cs).
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/BulkheadTest.cs).
 
 #### Wrap
 
 The wrap policy is a policy
  that can combine some policies.
 
-See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/WrapTest.cs).
+See [test codes](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/WrapTest.cs).
 
 ### Samples
 
-- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Resilience.Tests)
-- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience.Tests/HttpClientResilienceSample.cs)
+- [Test codes](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent.Resilience.Tests)
+- [Sample with HttpClient](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent.Resilience.Tests/HttpClientResilienceSample.cs)
 
 ### Extensions
 
