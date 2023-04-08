@@ -35,13 +35,13 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
                 }
                 else
                 {
-                    return ResultFactory.Fail<string>(
+                    return ResultExtensions.FailWithTrace<string>(
                         $"Failed to serialize because serialized JSON of {typeof(T)} was null or empty.");
                 }
             }
             catch (JsonException exception)
             {
-                return ResultFactory.Fail<string>(
+                return ResultExtensions.FailWithTrace<string>(
                     $"Failed to serialize {typeof(T)} to JSON because of {exception}.");
             }
         }
@@ -75,13 +75,13 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
                 }
                 else
                 {
-                    return ResultFactory.Fail<T>(
+                    return ResultExtensions.FailWithTrace<T>(
                         $"Failed to deserialize because deserialized object of {typeof(T)} was null.");
                 }
             }
             catch (JsonException exception)
             {
-                return ResultFactory.Fail<T>(
+                return ResultExtensions.FailWithTrace<T>(
                     $"Failed to deserialize {typeof(T)} from JSON because of {exception}.");
             }
         }

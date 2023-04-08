@@ -21,6 +21,12 @@ namespace Mochineko.Relent.Resilience
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Operation has been already cancelled.");
+            }
+            
             try
             {
                 await Task.Delay(waitTime, cancellationToken);
@@ -44,6 +50,12 @@ namespace Mochineko.Relent.Resilience
             SemaphoreSlim semaphoreSlim,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return UncertainResultExtensions.RetryWithTrace(
+                    $"Operation has been already cancelled.");
+            }
+            
             try
             {
                 await semaphoreSlim.WaitAsync(cancellationToken);

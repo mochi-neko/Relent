@@ -12,6 +12,19 @@ The Relent is a library that provides explicit error handling
 4. It makes the code a lot easier to read.
 5. You obtain resilience for uncertain operations e.g. HTTP communication.
 
+## How to import by Unity Package Manager
+
+Add this dependency to your `Packages/manifest.json`:
+
+```json
+{
+  "dependencies": {
+    "com.mochineko.relent": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent#0.2.0",
+    ...
+  }
+}
+```
+
 ## Modules
 
 This library contains these modules:
@@ -24,19 +37,6 @@ This library contains these modules:
 
 [Result](https://github.com/mochi-neko/Relent/tree/main/Assets/Mochineko/Relent/Result)
  is a simple and explicit error handling module.
-
-### How to import by Unity Package Manager
-
-Add this dependency to your `Packages/manifest.json`:
-
-```json
-{
-  "dependencies": {
-    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.3",
-    ...
-  }
-}
-```
 
 ### Core specification
 
@@ -140,17 +140,6 @@ public IResult<MyObject> MyOperation()
  is an explicit error handling module
  for an uncertain operation that can be retryable failure,
  e.g. [HTTP communication for a WebAPI](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/UncertainResult.Tests/MockWebAPI.cs).
-
-### How to import by Unity Package Manager
-
-```json
-{
-  "dependencies": {
-    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.3",
-    ...
-  }
-}
-```
 
 ### Core specification
 
@@ -317,18 +306,6 @@ When you use [UncertainResult](#uncertain-result),
  as retryable result,
  then we cannot cancel by timeout.
 
-### How to import by Unity Package Manager
-
-```json
-{
-  "dependencies": {
-    "com.mochineko.relent.resilience": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Resilience#0.1.3",
-    "com.mochineko.relent.uncertain-result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/UncertainResult#0.1.3",
-    ...
-  }
-}
-```
-
 ### Core specification
 
 - [IPolicy](https://github.com/mochi-neko/Relent/blob/main/Assets/Mochineko/Relent/Resilience/IPolicy.cs)
@@ -415,4 +392,4 @@ See [NOTICE](https://github.com/mochi-neko/ChatGPT-API-unity/blob/main/NOTICE.md
 
 ## License
 
-[MIT License](https://github.com/mochi-neko/ChatGPT-API-unity/blob/main/LICENSE)
+Licensed under the [MIT](https://github.com/mochi-neko/ChatGPT-API-unity/blob/main/LICENSE) license.

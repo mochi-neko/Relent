@@ -1,0 +1,11 @@
+{
+  "name": "com.mochineko.relent",
+  "version": "0.2.0",
+  "displayName": "Relent",
+  "description": "Provides an explicit error handling and resilience for an uncertain operation.",
+  "unity": "2021.3",
+  "author": {
+    "name": "Mochineko",
+    "email": "t.o.e.4315@gmail.com"
+  }
+}

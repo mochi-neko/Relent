@@ -1,6 +1,6 @@
 {
   "name": "com.mochineko.relent.extensions.unitask",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "displayName": "Relent extension for UniTask",
   "description": "Relent extension for UniTask",
   "unity": "2021.3",
@@ -9,7 +9,7 @@
     "email": "t.o.e.4315@gmail.com"
   },
   "dependencies": {
-    "com.mochineko.relent.result": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent/Result#0.1.2",
+    "com.mochineko.relent": "https://github.com/mochi-neko/Relent.git?path=/Assets/Mochineko/Relent#0.2.0",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
   }
 }

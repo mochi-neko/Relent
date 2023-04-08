@@ -24,7 +24,7 @@ namespace Mochineko.Relent.Extensions.UniTask
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return ResultFactory.Fail(
+                return ResultExtensions.FailWithTrace(
                     $"Failed because operation has been already cancelled.");
             }
             
@@ -40,7 +40,7 @@ namespace Mochineko.Relent.Extensions.UniTask
             }
             catch (OperationCanceledException exception)
             {
-                return ResultFactory.Fail(
+                return ResultExtensions.FailWithTrace(
                     $"Failed to delay because operation was cancelled by -> {exception}.");
             }
         }
@@ -55,7 +55,7 @@ namespace Mochineko.Relent.Extensions.UniTask
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return ResultFactory.Fail(
+                return ResultExtensions.FailWithTrace(
                     $"Failed because operation has been already cancelled.");
             }
             
@@ -67,7 +67,7 @@ namespace Mochineko.Relent.Extensions.UniTask
             }
             catch (OperationCanceledException exception)
             {
-                return ResultFactory.Fail(
+                return ResultExtensions.FailWithTrace(
                     $"Failed to switch to main thread because operation was cancelled by -> {exception}.");
             }
         }
