@@ -3,8 +3,19 @@ using System;
 
 namespace Mochineko.Relent.UncertainResult
 {
+    /// <summary>
+    /// Extensions for <see cref="IUncertainResult"/> and <see cref="IUncertainResult{TResult}"/>.
+    /// </summary>
     public static class UncertainResultExtensions
     {
+        /// <summary>
+        /// Unwraps <typeparamref name="TResult"/> to <see cref="IUncertainSuccessResult"/>.
+        /// Note that this method throws <see cref="InvalidOperationException"/> if the result is not success.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Not success result</exception>
         public static TResult Unwrap<TResult>(this IUncertainResult<TResult> result)
         {
             if (result is IUncertainSuccessResult<TResult> success)
@@ -17,6 +28,13 @@ namespace Mochineko.Relent.UncertainResult
             }
         }
 
+        /// <summary>
+        /// Extracts message from <see cref="IUncertainRetryableResult"/> or <see cref="IUncertainFailureResult"/>.
+        /// Note that this method throws <see cref="InvalidOperationException"/> if the result is not retryable or failure.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Success result</exception>
         public static string ExtractMessage(this IUncertainResult result)
         {
             if (result is IUncertainRetryableResult retryable)
@@ -33,6 +51,14 @@ namespace Mochineko.Relent.UncertainResult
             }
         }
 
+        /// <summary>
+        /// Extracts message from <see cref="IUncertainRetryableResult{TResult}"/> or <see cref="IUncertainFailureResult{TResult}"/>.
+        /// Note that this method throws <see cref="InvalidOperationException"/> if the result is not retryable or failure.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Success result</exception>
         public static string ExtractMessage<TResult>(this IUncertainResult<TResult> result)
         {
             if (result is IUncertainRetryableResult<TResult> retryable)
@@ -49,30 +75,21 @@ namespace Mochineko.Relent.UncertainResult
             }
         }
 
+        /// <summary>
+        /// Converts <typeparamref name="TResult"/> to <see cref="IUncertainSuccessResult{TResult}"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
         public static IUncertainResult<TResult> ToResult<TResult>(this TResult result)
             => UncertainResults.Succeed(result);
-
-        public static IUncertainResult Try<TException>(
-            Action operation,
-            Action? finalizer = null)
-            where TException : Exception
-        {
-            try
-            {
-                operation.Invoke();
-                return UncertainResults.Succeed();
-            }
-            catch (TException exception)
-            {
-                return UncertainResults.Fail(
-                    $"Failed to execute operation because of {exception}.");
-            }
-            finally
-            {
-                finalizer?.Invoke();
-            }
-        }
         
+        /// <summary>
+        /// Traces a message to <see cref="IUncertainTraceRetryableResult"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static IUncertainTraceRetryableResult Trace(
             this IUncertainTraceRetryableResult result,
             string message)
@@ -81,6 +98,13 @@ namespace Mochineko.Relent.UncertainResult
             return result;
         }
 
+        /// <summary>
+        /// Traces a message to <see cref="IUncertainTraceRetryableResult{TResult}"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="message"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
         public static IUncertainTraceRetryableResult<TResult> Trace<TResult>(
             this IUncertainTraceRetryableResult<TResult> result,
             string message)
@@ -89,6 +113,12 @@ namespace Mochineko.Relent.UncertainResult
             return result;
         }
         
+        /// <summary>
+        /// Traces a message to <see cref="IUncertainTraceFailureResult"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static IUncertainTraceFailureResult Trace(
             this IUncertainTraceFailureResult result,
             string message)
@@ -97,6 +127,13 @@ namespace Mochineko.Relent.UncertainResult
             return result;
         }
 
+        /// <summary>
+        /// Traces a message to <see cref="IUncertainTraceFailureResult{TResult}"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="message"></param>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
         public static IUncertainTraceFailureResult<TResult> Trace<TResult>(
             this IUncertainTraceFailureResult<TResult> result,
             string message)

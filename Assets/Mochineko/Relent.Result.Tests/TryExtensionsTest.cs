@@ -13,7 +13,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldSuccessWithNoException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(() =>
                 {
                     // Do nothing.
@@ -27,7 +27,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldSuccessWithNoException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(() => 1)
                 .Execute();
 
@@ -39,7 +39,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(() => { throw new NullReferenceException(); })
                 .Catch<NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -52,7 +52,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try<int>(() => { throw new NullReferenceException(); })
                 .Catch<int, NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -65,7 +65,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldNotCatchNoSpecifiedException()
         {
-            Func<IResult> tryExtension = () => TryExtensions
+            Func<IResult> tryExtension = () => TryFactory
                 .Try(() => throw new InvalidCastException())
                 .Catch<NullReferenceException>(_ => "Failed")
                 .Execute();
@@ -77,7 +77,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldNotCatchNoSpecifiedException()
         {
-            Func<IResult<int>> tryExtension = () => TryExtensions
+            Func<IResult<int>> tryExtension = () => TryFactory
                 .Try<int>(() => throw new InvalidCastException())
                 .Catch<int, NullReferenceException>(_ => "Failed")
                 .Execute();
@@ -89,7 +89,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedFrontException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<ArgumentOutOfRangeException>(_ => "Caught")
@@ -104,7 +104,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedFrontException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<int, ArgumentOutOfRangeException>(_ => "Caught")
@@ -120,7 +120,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedBackException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<NullReferenceException>(_ => "Failed")
@@ -135,7 +135,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedBackException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<int, NullReferenceException>(_ => "Failed")
@@ -150,7 +150,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedMediumException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<NullReferenceException>(_ => "Failed")
@@ -166,7 +166,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedMediumException()
         {
-            var result = TryExtensions
+            var result = TryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .Catch<int, NullReferenceException>(_ => "Failed")
@@ -183,7 +183,7 @@ namespace Mochineko.Relent.Result.Tests
         public void TryShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = TryExtensions
+            var result = TryFactory
                 .Try(() => throw new NullReferenceException())
                 .Catch<NullReferenceException>(_ => "Caught")
                 .Finalize(() => finalized = true)
@@ -199,7 +199,7 @@ namespace Mochineko.Relent.Result.Tests
         public void TryWithValueShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = TryExtensions
+            var result = TryFactory
                 .Try<int>(() => throw new NullReferenceException())
                 .Catch<int, NullReferenceException>(_ => "Caught")
                 .Finalize(() => finalized = true)

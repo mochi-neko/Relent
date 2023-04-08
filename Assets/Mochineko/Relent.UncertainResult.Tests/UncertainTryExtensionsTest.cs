@@ -13,7 +13,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldSuccessWithNoException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(() =>
                 {
                     // Do nothing.
@@ -27,7 +27,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldSuccessWithNoException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(() => 1)
                 .Execute();
 
@@ -39,7 +39,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(() => { throw new NullReferenceException(); })
                 .CatchAsRetryable<NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -52,7 +52,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(() => { throw new NullReferenceException(); })
                 .CatchAsRetryable<int, NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -65,7 +65,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedExceptionAsFailure()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(() => { throw new NullReferenceException(); })
                 .CatchAsFailure<NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -78,7 +78,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedExceptionAsFailure()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(() => { throw new NullReferenceException(); })
                 .CatchAsFailure<int, NullReferenceException>(_ => "Caught")
                 .Execute();
@@ -91,7 +91,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldNotCatchNoSpecifiedException()
         {
-            Func<IUncertainResult> tryExtension = () => UncertainTryExtensions
+            Func<IUncertainResult> tryExtension = () => UncertainTryFactory
                 .Try(() => throw new InvalidCastException())
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Failed")
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
@@ -104,7 +104,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldNotCatchNoSpecifiedException()
         {
-            Func<IUncertainResult<int>> tryExtension = () => UncertainTryExtensions
+            Func<IUncertainResult<int>> tryExtension = () => UncertainTryFactory
                 .Try<int>(() => throw new InvalidCastException())
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Failed")
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
@@ -117,7 +117,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedFrontExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Caught")
@@ -132,7 +132,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedFrontExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Caught")
@@ -148,7 +148,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedBackExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<NullReferenceException>(_ => "Failed")
@@ -163,7 +163,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedBackExceptionAsRetryable()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<int, NullReferenceException>(_ => "Failed")
@@ -178,7 +178,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedFrontException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<ArgumentOutOfRangeException>(_ => "Caught")
@@ -193,7 +193,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedFrontException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, ArgumentOutOfRangeException>(_ => "Caught")
@@ -209,7 +209,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedBackException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
@@ -224,7 +224,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedBackException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
@@ -239,7 +239,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryShouldCatchSpecifiedMediumException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
@@ -255,7 +255,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TryWithValueShouldCatchSpecifiedMediumException()
         {
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(()
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
@@ -272,7 +272,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         public void TryShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try(() => throw new NullReferenceException())
                 .CatchAsFailure<NullReferenceException>(_ => "Caught")
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Failed")
@@ -289,7 +289,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         public void TryWithValueShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = UncertainTryExtensions
+            var result = UncertainTryFactory
                 .Try<int>(() => throw new NullReferenceException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Caught")
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Failed")
