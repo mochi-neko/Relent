@@ -1,48 +1,52 @@
 #nullable enable
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
+#pragma warning disable CS1998
+
 namespace Mochineko.Relent.UncertainResult.Tests
 {
     [TestFixture]
-    internal sealed class UncertainTryExtensionsTest
+    internal sealed class AsyncUncertainTryAsyncExtensionsTest
     {
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldSuccessWithNoException()
+        public async Task TryAsyncShouldSuccessWithNoException()
         {
-            var result = UncertainTryFactory
-                .Try(() =>
+            var result = await UncertainTryFactory
+                .TryAsync(async _ =>
                 {
                     // Do nothing.
                 })
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Success.Should().BeTrue();
         }
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldSuccessWithNoException()
+        public async Task TryAsyncWithValueShouldSuccessWithNoException()
         {
-            var result = UncertainTryFactory
-                .Try(() => 1)
-                .Execute();
+            var result = await UncertainTryFactory
+                .TryAsync(async _ => 1)
+                .ExecuteAsync(CancellationToken.None);
 
             result.Success.Should().BeTrue();
             result.Unwrap().Should().Be(1);
         }
-        
+
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedExceptionAsRetryable()
+        public async Task TryAsyncShouldCatchSpecifiedExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try(() => { throw new NullReferenceException(); })
+            var result = await UncertainTryFactory
+                .TryAsync(_ => { throw new NullReferenceException(); })
                 .CatchAsRetryable<NullReferenceException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -50,12 +54,12 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedExceptionAsRetryable()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try<int>(() => { throw new NullReferenceException(); })
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_ => { throw new NullReferenceException(); })
                 .CatchAsRetryable<int, NullReferenceException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -63,12 +67,12 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedExceptionAsFailure()
+        public async Task TryAsyncShouldCatchSpecifiedExceptionAsFailure()
         {
-            var result = UncertainTryFactory
-                .Try(() => { throw new NullReferenceException(); })
+            var result = await UncertainTryFactory
+                .TryAsync(_ => { throw new NullReferenceException(); })
                 .CatchAsFailure<NullReferenceException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -76,12 +80,12 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedExceptionAsFailure()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedExceptionAsFailure()
         {
-            var result = UncertainTryFactory
-                .Try<int>(() => { throw new NullReferenceException(); })
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_ => { throw new NullReferenceException(); })
                 .CatchAsFailure<int, NullReferenceException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -89,40 +93,39 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldNotCatchNoSpecifiedException()
+        public async Task TryAsyncShouldNotCatchNoSpecifiedException()
         {
-            Func<IUncertainResult> tryExtension = () => UncertainTryFactory
-                .Try(() => throw new InvalidCastException())
+            Func<Task<IUncertainResult>> tryAsyncExtension = async () => await UncertainTryFactory
+                .TryAsync(_ => throw new InvalidCastException())
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Failed")
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
-            tryExtension.Should().Throw<InvalidCastException>();
+            await tryAsyncExtension.Should().ThrowAsync<InvalidCastException>();
         }
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldNotCatchNoSpecifiedException()
+        public async Task TryAsyncWithValueShouldNotCatchNoSpecifiedException()
         {
-            Func<IUncertainResult<int>> tryExtension = () => UncertainTryFactory
-                .Try<int>(() => throw new InvalidCastException())
+            Func<Task<IUncertainResult<int>>> tryAsyncExtension = async () => await UncertainTryFactory
+                .TryAsync<int>(_ => throw new InvalidCastException())
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Failed")
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
-            tryExtension.Should().Throw<InvalidCastException>();
+            await tryAsyncExtension.Should().ThrowAsync<InvalidCastException>();
         }
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedFrontExceptionAsRetryable()
+        public async Task TryAsyncShouldCatchSpecifiedFrontExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try(()
-                    => throw new ArgumentOutOfRangeException())
+            var result = await UncertainTryFactory
+                .TryAsync(_ => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsRetryable<NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -130,14 +133,14 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedFrontExceptionAsRetryable()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedFrontExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try<int>(()
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsRetryable<int, NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -146,14 +149,14 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedBackExceptionAsRetryable()
+        public async Task TryAsyncShouldCatchSpecifiedBackExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try(()
+            var result = await UncertainTryFactory
+                .TryAsync(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<NullReferenceException>(_ => "Failed")
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -161,29 +164,29 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedBackExceptionAsRetryable()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedBackExceptionAsReTryAsyncable()
         {
-            var result = UncertainTryFactory
-                .Try<int>(()
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsRetryable<int, NullReferenceException>(_ => "Failed")
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
         }
-        
+
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedFrontException()
+        public async Task TryAsyncShouldCatchSpecifiedFrontException()
         {
-            var result = UncertainTryFactory
-                .Try(()
+            var result = await UncertainTryFactory
+                .TryAsync(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -191,14 +194,14 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedFrontException()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedFrontException()
         {
-            var result = UncertainTryFactory
-                .Try<int>(()
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -207,14 +210,14 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedBackException()
+        public async Task TryAsyncShouldCatchSpecifiedBackException()
         {
-            var result = UncertainTryFactory
-                .Try(()
+            var result = await UncertainTryFactory
+                .TryAsync(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
                 .CatchAsFailure<ArgumentOutOfRangeException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -222,14 +225,14 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedBackException()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedBackException()
         {
-            var result = UncertainTryFactory
-                .Try<int>(()
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
                 .CatchAsFailure<int, ArgumentOutOfRangeException>(_ => "Caught")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -237,15 +240,15 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldCatchSpecifiedMediumException()
+        public async Task TryAsyncShouldCatchSpecifiedMediumException()
         {
-            var result = UncertainTryFactory
-                .Try(()
+            var result = await UncertainTryFactory
+                .TryAsync(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<NullReferenceException>(_ => "Failed")
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsFailure<ArgumentNullException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -253,15 +256,15 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldCatchSpecifiedMediumException()
+        public async Task TryAsyncWithValueShouldCatchSpecifiedMediumException()
         {
-            var result = UncertainTryFactory
-                .Try<int>(()
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_
                     => throw new ArgumentOutOfRangeException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Failed")
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Caught")
                 .CatchAsFailure<int, ArgumentNullException>(_ => "Failed")
-                .Execute();
+                .ExecuteAsync(CancellationToken.None);
 
             result.Retryable.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -269,15 +272,15 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryShouldExecuteFinalizer()
+        public async Task TryAsyncShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = UncertainTryFactory
-                .Try(() => throw new NullReferenceException())
+            var result = await UncertainTryFactory
+                .TryAsync(_ => throw new NullReferenceException())
                 .CatchAsFailure<NullReferenceException>(_ => "Caught")
                 .CatchAsRetryable<ArgumentOutOfRangeException>(_ => "Failed")
-                .Finalize(() => finalized = true)
-                .Execute();
+                .Finalize(async () => finalized = true)
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
@@ -286,15 +289,15 @@ namespace Mochineko.Relent.UncertainResult.Tests
 
         [Test]
         [RequiresPlayMode(false)]
-        public void TryWithValueShouldExecuteFinalizer()
+        public async Task TryAsyncWithValueShouldExecuteFinalizer()
         {
             var finalized = false;
-            var result = UncertainTryFactory
-                .Try<int>(() => throw new NullReferenceException())
+            var result = await UncertainTryFactory
+                .TryAsync<int>(_ => throw new NullReferenceException())
                 .CatchAsFailure<int, NullReferenceException>(_ => "Caught")
                 .CatchAsRetryable<int, ArgumentOutOfRangeException>(_ => "Failed")
-                .Finalize(() => finalized = true)
-                .Execute();
+                .Finalize(async () => finalized = true)
+                .ExecuteAsync(CancellationToken.None);
 
             result.Failure.Should().BeTrue();
             result.ExtractMessage().Should().Be("Caught\n");
