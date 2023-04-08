@@ -50,7 +50,7 @@ namespace Mochineko.Relent.UncertainResult
         }
 
         public static IUncertainResult<TResult> ToResult<TResult>(this TResult result)
-            => UncertainResultFactory.Succeed(result);
+            => UncertainResults.Succeed(result);
 
         public static IUncertainResult Try<TException>(
             Action operation,
@@ -60,11 +60,11 @@ namespace Mochineko.Relent.UncertainResult
             try
             {
                 operation.Invoke();
-                return UncertainResultFactory.Succeed();
+                return UncertainResults.Succeed();
             }
             catch (TException exception)
             {
-                return UncertainResultFactory.Fail(
+                return UncertainResults.Fail(
                     $"Failed to execute operation because of {exception}.");
             }
             finally
@@ -73,22 +73,6 @@ namespace Mochineko.Relent.UncertainResult
             }
         }
         
-        public static IUncertainTraceRetryableResult RetryWithTrace(
-            string message)
-            => new UncertainTraceRetryableResult(message);
-
-        public static IUncertainTraceRetryableResult<TResult> RetryWithTrace<TResult>(
-            string message)
-            => new UncertainTraceRetryableResult<TResult>(message);
-
-        public static IUncertainTraceFailureResult FailWithTrace(
-            string message)
-            => new UncertainTraceFailureResult(message);
-
-        public static IUncertainTraceFailureResult<TResult> FailWithTrace<TResult>(
-            string message)
-            => new UncertainTraceFailureResult<TResult>(message);
-
         public static IUncertainTraceRetryableResult Trace(
             this IUncertainTraceRetryableResult result,
             string message)

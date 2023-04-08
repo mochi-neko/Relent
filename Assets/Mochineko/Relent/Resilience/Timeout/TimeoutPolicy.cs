@@ -22,7 +22,7 @@ namespace Mochineko.Relent.Resilience.Timeout
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
             }
 
@@ -45,7 +45,7 @@ namespace Mochineko.Relent.Resilience.Timeout
                         $"Retryable timeout because result was {reason}.");
 
                 case IUncertainRetryableResult retryable:
-                    return UncertainResultExtensions.RetryWithTrace(
+                    return UncertainResults.RetryWithTrace(
                         $"Retryable timeout because result was {reason} -> {retryable.Message}.");
 
                 case IUncertainTraceFailureResult traceFailure:
@@ -53,7 +53,7 @@ namespace Mochineko.Relent.Resilience.Timeout
                         $"Failed timeout because result was failure or timeout.");
 
                 case IUncertainFailureResult failure:
-                    return UncertainResultExtensions.FailWithTrace(
+                    return UncertainResults.FailWithTrace(
                         $"Failed timeout because -> {failure.Message}.");
 
                 default:
@@ -79,7 +79,7 @@ namespace Mochineko.Relent.Resilience.Timeout
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                return UncertainResults.RetryWithTrace<TResult>(
                     $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
             }
 
@@ -102,11 +102,11 @@ namespace Mochineko.Relent.Resilience.Timeout
                         $"Retryable timeout because result was {reason}.");
 
                 case IUncertainRetryableResult<TResult> retryable:
-                    return UncertainResultFactory.Retry<TResult>(
+                    return UncertainResults.Retry<TResult>(
                         $"Retryable timeout because result was {reason} -> {retryable.Message}.");
 
                 case IUncertainFailureResult<TResult> failure:
-                    return UncertainResultFactory.Fail<TResult>(
+                    return UncertainResults.Fail<TResult>(
                         $"Failed timeout because -> {failure.Message}.");
 
                 default:

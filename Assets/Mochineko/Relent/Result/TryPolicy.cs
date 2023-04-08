@@ -16,7 +16,7 @@ namespace Mochineko.Relent.Result
         public IResult Execute()
         {
             operation.Invoke();
-            return ResultFactory.Succeed();
+            return Results.Succeed();
         }
     }
     
@@ -33,7 +33,7 @@ namespace Mochineko.Relent.Result
         public IResult<TResult> Execute()
         {
             var result = operation.Invoke();
-            return ResultFactory.Succeed(result);
+            return Results.Succeed(result);
         }
     }
 }

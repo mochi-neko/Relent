@@ -23,7 +23,7 @@ namespace Mochineko.Relent.Resilience
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Operation has been already cancelled.");
             }
             
@@ -31,11 +31,11 @@ namespace Mochineko.Relent.Resilience
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return UncertainResultFactory.Succeed();
+                return UncertainResults.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled to wait delay because operation was cancelled because of {exception}.");
             }
         }
@@ -52,7 +52,7 @@ namespace Mochineko.Relent.Resilience
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Operation has been already cancelled.");
             }
             
@@ -60,11 +60,11 @@ namespace Mochineko.Relent.Resilience
             {
                 await semaphoreSlim.WaitAsync(cancellationToken);
 
-                return UncertainResultFactory.Succeed();
+                return UncertainResults.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled to wait semaphore because operation was cancelled because of:{exception}.");
             }
         }

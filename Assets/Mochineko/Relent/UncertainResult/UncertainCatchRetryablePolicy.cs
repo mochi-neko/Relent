@@ -26,7 +26,7 @@ namespace Mochineko.Relent.UncertainResult
             }
             catch (TException exception)
             {
-                return UncertainResultFactory.Retry(messageProvider.Invoke(exception));
+                return UncertainResults.Retry(messageProvider.Invoke(exception));
             }
         }
     }
@@ -54,7 +54,7 @@ namespace Mochineko.Relent.UncertainResult
             }
             catch (TException exception)
             {
-                return UncertainResultFactory.Retry<TResult>(messageProvider.Invoke(exception));
+                return UncertainResults.Retry<TResult>(messageProvider.Invoke(exception));
             }
         }
     }

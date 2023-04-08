@@ -26,7 +26,7 @@ namespace Mochineko.Relent.Result
             }
             catch (TException exception)
             {
-                return ResultFactory.Fail(messageProvider.Invoke(exception));
+                return Results.Fail(messageProvider.Invoke(exception));
             }
         }
     }
@@ -54,7 +54,7 @@ namespace Mochineko.Relent.Result
             }
             catch (TException exception)
             {
-                return ResultFactory.Fail<TResult>(messageProvider.Invoke(exception));
+                return Results.Fail<TResult>(messageProvider.Invoke(exception));
             }
         }
     }

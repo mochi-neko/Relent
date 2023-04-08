@@ -13,7 +13,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void UnwrapShouldSuccessForSuccessResult()
         {
-            IResult<int> result = ResultFactory.Succeed(1);
+            IResult<int> result = Results.Succeed(1);
 
             result.Unwrap().Should().Be(1);
         }
@@ -22,7 +22,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void UnwrapShouldFailForFailureResult()
         {
-            Func<int> unwrap = ResultFactory.Fail<int>("Fail").Unwrap;
+            Func<int> unwrap = Results.Fail<int>("Fail").Unwrap;
 
             unwrap.Should().Throw<InvalidOperationException>();
         }
@@ -31,7 +31,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void ExtractMessageShouldSuccessForFailureResult()
         {
-            IResult<int> result = ResultFactory.Fail<int>("message");
+            IResult<int> result = Results.Fail<int>("message");
 
             result.ExtractMessage().Should().Be("message");
         }
@@ -40,7 +40,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void ExtractMessageShouldFailForSuccessResult()
         {
-            Func<string> extract = () => ResultFactory.Succeed(1).ExtractMessage();
+            Func<string> extract = () => Results.Succeed(1).ExtractMessage();
 
             extract.Should().Throw<InvalidOperationException>();
         }
@@ -58,7 +58,7 @@ namespace Mochineko.Relent.Result.Tests
         [RequiresPlayMode(false)]
         public void TraceFailureShouldStackMessages()
         {
-            var result1 = ResultExtensions.FailWithTrace<float>("message1.");
+            var result1 = Results.FailWithTrace<float>("message1.");
             var result2 = result1.Trace("message2.");
             var result3 = result2.Trace("message3.");
             var result4 = result3.Trace("message4.");

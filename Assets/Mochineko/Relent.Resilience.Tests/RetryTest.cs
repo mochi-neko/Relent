@@ -25,7 +25,7 @@ namespace Mochineko.Relent.Resilience.Tests
             IRetryPolicy policy = RetryFactory.Retry(maxRetryCount);
 
             Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResultExtensions.RetryWithTrace("Force retry."));
+                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var result = await policy.ExecuteAsync(
                 execute: ForceRetry,
@@ -47,7 +47,7 @@ namespace Mochineko.Relent.Resilience.Tests
             IRetryPolicy<bool> policy = RetryFactory.Retry<bool>(maxRetryCount);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResultExtensions.RetryWithTrace<bool>("Force retry."));
+                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var result = await policy.ExecuteAsync(
                 execute: ForceRetry,
@@ -71,7 +71,7 @@ namespace Mochineko.Relent.Resilience.Tests
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
             Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResultExtensions.RetryWithTrace("Force retry."));
+                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -102,7 +102,7 @@ namespace Mochineko.Relent.Resilience.Tests
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResultExtensions.RetryWithTrace<bool>("Force retry."));
+                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -133,7 +133,7 @@ namespace Mochineko.Relent.Resilience.Tests
                 baseNumber);
 
             Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResultExtensions.RetryWithTrace("Force retry."));
+                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -163,7 +163,7 @@ namespace Mochineko.Relent.Resilience.Tests
                 baseNumber);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResultExtensions.RetryWithTrace<bool>("Force retry."));
+                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -201,7 +201,7 @@ namespace Mochineko.Relent.Resilience.Tests
             IRetryPolicy policy = RetryFactory.RetryWithJitter(maxRetryCount, minimum, maximum);
 
             Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResultExtensions.RetryWithTrace("Force retry."));
+                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -228,7 +228,7 @@ namespace Mochineko.Relent.Resilience.Tests
             IRetryPolicy<bool> policy = RetryFactory.RetryWithJitter<bool>(maxRetryCount, minimum, maximum);
 
             Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResultExtensions.RetryWithTrace<bool>("Force retry."));
+                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();

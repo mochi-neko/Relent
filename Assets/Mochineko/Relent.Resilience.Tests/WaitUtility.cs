@@ -16,11 +16,11 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return UncertainResultFactory.Succeed();
+                return UncertainResults.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry(
+                return UncertainResults.Retry(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
@@ -34,11 +34,11 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return UncertainResultFactory.Succeed(successResult);
+                return UncertainResults.Succeed(successResult);
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry<TResult>(
+                return UncertainResults.Retry<TResult>(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
@@ -51,12 +51,12 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return UncertainResultFactory.Retry(
+                return UncertainResults.Retry(
                     "Retryable after wait.");
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry(
+                return UncertainResults.Retry(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
@@ -69,12 +69,12 @@ namespace Mochineko.Relent.Resilience.Tests
             {
                 await Task.Delay(waitTime, cancellationToken);
 
-                return UncertainResultFactory.Retry<TResult>(
+                return UncertainResults.Retry<TResult>(
                     "Retryable after wait.");
             }
             catch (OperationCanceledException exception)
             {
-                return UncertainResultFactory.Retry<TResult>(
+                return UncertainResults.Retry<TResult>(
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }

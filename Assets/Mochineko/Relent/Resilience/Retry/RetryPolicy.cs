@@ -39,7 +39,7 @@ namespace Mochineko.Relent.Resilience.Retry
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
             }
             
@@ -87,7 +87,7 @@ namespace Mochineko.Relent.Resilience.Retry
                         return traceFailure.Trace($"Failed to retry at {retryCount}th retry.");
 
                     case IUncertainFailureResult failure:
-                        return UncertainResultExtensions.FailWithTrace(
+                        return UncertainResults.FailWithTrace(
                             $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
 
                     default:
@@ -97,7 +97,7 @@ namespace Mochineko.Relent.Resilience.Retry
             }
 
             // Over max retry count
-            return UncertainResultExtensions.RetryWithTrace(
+            return UncertainResults.RetryWithTrace(
                 $"Retryable because retry count was over max count:{maxRetryCount}.");
         }
     }
@@ -135,7 +135,7 @@ namespace Mochineko.Relent.Resilience.Retry
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                return UncertainResults.RetryWithTrace<TResult>(
                     $"Cancelled before retry because of {nameof(cancellationToken)} is cancelled.");
             }
             
@@ -172,7 +172,7 @@ namespace Mochineko.Relent.Resilience.Retry
                             .WaitAsync(intervalProvider.Invoke(retryCount), cancellationToken);
                         if (intervalResult is IUncertainTraceRetryableResult cancelled)
                         {
-                            return UncertainResultExtensions.RetryWithTrace<TResult>(
+                            return UncertainResults.RetryWithTrace<TResult>(
                                 $"Cancelled in interval at {retryCount}th retry -> {cancelled.Message}.");
                         }
 
@@ -184,7 +184,7 @@ namespace Mochineko.Relent.Resilience.Retry
                             $"Failed to retry at {retryCount}th retry.");
 
                     case IUncertainFailureResult<TResult> failure:
-                        return UncertainResultExtensions.FailWithTrace<TResult>(
+                        return UncertainResults.FailWithTrace<TResult>(
                             $"Failed to retry at {retryCount}th retry because -> {failure.Message}");
 
                     default:
@@ -194,7 +194,7 @@ namespace Mochineko.Relent.Resilience.Retry
             }
 
             // Over max retry count
-            return UncertainResultExtensions.RetryWithTrace<TResult>(
+            return UncertainResults.RetryWithTrace<TResult>(
                 $"Retryable because retry count was over max count:{maxRetryCount}.");
         }
     }

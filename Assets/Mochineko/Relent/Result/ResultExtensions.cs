@@ -42,15 +42,7 @@ namespace Mochineko.Relent.Result
         }
 
         public static IResult<TResult> ToResult<TResult>(this TResult result)
-            => ResultFactory.Succeed(result);
-        
-        public static IFailureTraceResult FailWithTrace(
-            string message)
-            => new FailureTraceResult(message);
-
-        public static IFailureTraceResult<TResult> FailWithTrace<TResult>(
-            string message)
-            => new FailureTraceResult<TResult>(message);
+            => Results.Succeed(result);
 
         public static IFailureTraceResult Trace(
             this IFailureTraceResult result,

@@ -13,7 +13,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void UnwrapShouldSuccessForSuccessResult()
         {
-            var result = UncertainResultFactory.Succeed(1);
+            var result = UncertainResults.Succeed(1);
 
             result.Unwrap().Should().Be(1);
         }
@@ -22,7 +22,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void UnwrapShouldFailForRetryableResult()
         {
-            Func<int> unwrap = UncertainResultFactory.Retry<int>("Retryable")
+            Func<int> unwrap = UncertainResults.Retry<int>("Retryable")
                 .Unwrap;
 
             unwrap.Should().Throw<InvalidOperationException>();
@@ -33,7 +33,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void UnwrapShouldFailForFailureResult()
         {
-            Func<int> unwrap = UncertainResultFactory.Fail<int>("Fail")
+            Func<int> unwrap = UncertainResults.Fail<int>("Fail")
                 .Unwrap;
 
             unwrap.Should().Throw<InvalidOperationException>();
@@ -43,7 +43,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void ExtractMessageShouldSuccessForRetryableResult()
         {
-            var result = UncertainResultFactory.Retry<int>("message");
+            var result = UncertainResults.Retry<int>("message");
 
             result.ExtractMessage().Should().Be("message");
         }
@@ -52,7 +52,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void ExtractMessageShouldSuccessForFailureResult()
         {
-            var result = UncertainResultFactory.Fail<int>("message");
+            var result = UncertainResults.Fail<int>("message");
 
             result.ExtractMessage().Should().Be("message");
         }
@@ -61,7 +61,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void ExtractMessageShouldFailForSuccessResult()
         {
-            Func<string> extract = () => UncertainResultFactory.Succeed(1)
+            Func<string> extract = () => UncertainResults.Succeed(1)
                 .ExtractMessage();
 
             extract.Should().Throw<InvalidOperationException>();
@@ -80,7 +80,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TraceRetryableShouldStackMessages()
         {
-            var result1 = UncertainResultExtensions.RetryWithTrace<float>("message1.");
+            var result1 = UncertainResults.RetryWithTrace<float>("message1.");
             var result2 = result1.Trace("message2.");
             var result3 = result2.Trace("message3.");
             var result4 = result3.Trace("message4.");
@@ -96,7 +96,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void TraceFailureShouldStackMessages()
         {
-            var result1 = UncertainResultExtensions.FailWithTrace<float>("message1.");
+            var result1 = UncertainResults.FailWithTrace<float>("message1.");
             var result2 = result1.Trace("message2.");
             var result3 = result2.Trace("message3.");
             var result4 = result3.Trace("message4.");

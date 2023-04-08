@@ -24,7 +24,7 @@ namespace Mochineko.Relent.Extensions.UniTask
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return ResultExtensions.FailWithTrace(
+                return Results.FailWithTrace(
                     $"Failed because operation has been already cancelled.");
             }
             
@@ -36,11 +36,11 @@ namespace Mochineko.Relent.Extensions.UniTask
                     delayTiming,
                     cancellationToken);
 
-                return ResultFactory.Succeed();
+                return Results.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return ResultExtensions.FailWithTrace(
+                return Results.FailWithTrace(
                     $"Failed to delay because operation was cancelled by -> {exception}.");
             }
         }
@@ -55,7 +55,7 @@ namespace Mochineko.Relent.Extensions.UniTask
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return ResultExtensions.FailWithTrace(
+                return Results.FailWithTrace(
                     $"Failed because operation has been already cancelled.");
             }
             
@@ -63,11 +63,11 @@ namespace Mochineko.Relent.Extensions.UniTask
             {
                 await Cysharp.Threading.Tasks.UniTask.SwitchToMainThread(cancellationToken);
 
-                return ResultFactory.Succeed();
+                return Results.Succeed();
             }
             catch (OperationCanceledException exception)
             {
-                return ResultExtensions.FailWithTrace(
+                return Results.FailWithTrace(
                     $"Failed to switch to main thread because operation was cancelled by -> {exception}.");
             }
         }

@@ -13,7 +13,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void SuccessTest()
         {
-            IUncertainResult result = UncertainResultFactory.Succeed();
+            IUncertainResult result = UncertainResults.Succeed();
 
             result.Success.Should().BeTrue();
             result.Retryable.Should().BeFalse();
@@ -24,7 +24,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void RetryTest()
         {
-            IUncertainResult result = UncertainResultFactory.Retry("Test");
+            IUncertainResult result = UncertainResults.Retry("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeTrue();
@@ -35,7 +35,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void FailureTest()
         {
-            IUncertainResult result = UncertainResultFactory.Fail("Test");
+            IUncertainResult result = UncertainResults.Fail("Test");
 
             result.Success.Should().BeFalse();
             result.Retryable.Should().BeFalse();
@@ -46,7 +46,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathTest()
         {
-            IUncertainResult result = UncertainResultFactory.Succeed();
+            IUncertainResult result = UncertainResults.Succeed();
 
             if (result.Success)
             {
@@ -66,7 +66,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathTest()
         {
-            IUncertainResult result = UncertainResultFactory.Retry("Test");
+            IUncertainResult result = UncertainResults.Retry("Test");
 
             if (result.Success)
             {
@@ -86,7 +86,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathTest()
         {
-            IUncertainResult result = UncertainResultFactory.Fail("Test");
+            IUncertainResult result = UncertainResults.Fail("Test");
 
             if (result.Success)
             {
@@ -106,7 +106,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void HappyPathByPatternMatchingTest()
         {
-            IUncertainResult result = UncertainResultFactory.Succeed();
+            IUncertainResult result = UncertainResults.Succeed();
 
             if (result is IUncertainSuccessResult success)
             {
@@ -133,7 +133,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void RetryablePathByPatternMatchingTest()
         {
-            IUncertainResult result = UncertainResultFactory.Retry("Test");
+            IUncertainResult result = UncertainResults.Retry("Test");
 
             if (result is IUncertainSuccessResult success)
             {
@@ -161,7 +161,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
         [RequiresPlayMode(false)]
         public void ExceptionPathByPatternMatchingTest()
         {
-            IUncertainResult result = UncertainResultFactory.Fail("Test");
+            IUncertainResult result = UncertainResults.Fail("Test");
 
             if (result is IUncertainSuccessResult success)
             {

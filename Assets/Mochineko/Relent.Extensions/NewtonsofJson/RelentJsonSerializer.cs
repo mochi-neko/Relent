@@ -31,17 +31,17 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    return ResultFactory.Succeed(json);
+                    return Results.Succeed(json);
                 }
                 else
                 {
-                    return ResultExtensions.FailWithTrace<string>(
+                    return Results.FailWithTrace<string>(
                         $"Failed to serialize because serialized JSON of {typeof(T)} was null or empty.");
                 }
             }
             catch (JsonException exception)
             {
-                return ResultExtensions.FailWithTrace<string>(
+                return Results.FailWithTrace<string>(
                     $"Failed to serialize {typeof(T)} to JSON because of {exception}.");
             }
         }
@@ -59,7 +59,7 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
         {
             if (string.IsNullOrEmpty(json))
             {
-                return ResultFactory.Fail<T>(
+                return Results.Fail<T>(
                     $"Failed to deserialize because JSON string was null or empty.");
             }
             
@@ -71,17 +71,17 @@ namespace Mochineko.Relent.Extensions.NewtonsoftJson
 
                 if (requestBody != null)
                 {
-                    return ResultFactory.Succeed(requestBody);
+                    return Results.Succeed(requestBody);
                 }
                 else
                 {
-                    return ResultExtensions.FailWithTrace<T>(
+                    return Results.FailWithTrace<T>(
                         $"Failed to deserialize because deserialized object of {typeof(T)} was null.");
                 }
             }
             catch (JsonException exception)
             {
-                return ResultExtensions.FailWithTrace<T>(
+                return Results.FailWithTrace<T>(
                     $"Failed to deserialize {typeof(T)} from JSON because of {exception}.");
             }
         }

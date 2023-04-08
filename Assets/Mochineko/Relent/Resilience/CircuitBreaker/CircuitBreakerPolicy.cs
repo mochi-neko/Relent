@@ -85,13 +85,13 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled before circuit breaker because of {nameof(cancellationToken)} is cancelled.");
             }
 
             if (state is CircuitState.Isolated)
             {
-                return UncertainResultExtensions.FailWithTrace(
+                return UncertainResults.FailWithTrace(
                     "Failed because circuit breaker is manually isolated.");
             }
 
@@ -102,7 +102,7 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
             if (state is CircuitState.Open)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Retryable because circuit breaker is open by over threshold failure:{failureThreshold}.");
             }
             else // Closed or HalfOpen
@@ -127,14 +127,14 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
                     case IUncertainRetryableResult retryable:
                         TrackFailure();
-                        return UncertainResultExtensions.RetryWithTrace(
+                        return UncertainResults.RetryWithTrace(
                             $"Retryable at circuit breaker because -> {retryable.Message}.");
 
                     case IUncertainTraceFailureResult traceFailure:
                         return traceFailure.Trace($"Failed at circuit breaker.");
 
                     case IUncertainFailureResult failure:
-                        return UncertainResultExtensions.FailWithTrace(
+                        return UncertainResults.FailWithTrace(
                             $"Failed at circuit breaker because -> {failure.Message}.");
 
                     default:
@@ -223,13 +223,13 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                return UncertainResults.RetryWithTrace<TResult>(
                     $"Cancelled before circuit breaker because of {nameof(cancellationToken)} is cancelled.");
             }
 
             if (state is CircuitState.Isolated)
             {
-                return UncertainResultExtensions.FailWithTrace<TResult>(
+                return UncertainResults.FailWithTrace<TResult>(
                     "Failed because circuit breaker is manually isolated.");
             }
 
@@ -240,7 +240,7 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
             if (state is CircuitState.Open)
             {
-                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                return UncertainResults.RetryWithTrace<TResult>(
                     $"Retryable because circuit breaker is open by over threshold failure:{failureThreshold}.");
             }
             else // Closed or HalfOpen
@@ -265,14 +265,14 @@ namespace Mochineko.Relent.Resilience.CircuitBreaker
 
                     case IUncertainRetryableResult<TResult> retryable:
                         TrackFailure();
-                        return UncertainResultExtensions.RetryWithTrace<TResult>(
+                        return UncertainResults.RetryWithTrace<TResult>(
                             $"Retryable at circuit breaker because -> {retryable.Message}.");
 
                     case IUncertainTraceFailureResult<TResult> traceFailure:
                         return traceFailure.Trace($"Failed at circuit breaker.");
 
                     case IUncertainFailureResult<TResult> failure:
-                        return UncertainResultExtensions.FailWithTrace<TResult>(
+                        return UncertainResults.FailWithTrace<TResult>(
                             $"Failed at circuit breaker because -> {failure.Message}.");
 
                     default:

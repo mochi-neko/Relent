@@ -19,7 +19,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
             {
                 Debug.LogWarning(
                     $"Retryable because operation was cancelled before calling the API.");
-                return UncertainResultExtensions.RetryWithTrace<string>(
+                return UncertainResults.RetryWithTrace<string>(
                     $"Retryable because operation was cancelled before calling the API.");
             }
             
@@ -30,7 +30,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
                     .SendAsync(requestMessage, cancellationToken);
                 if (responseMessage == null)
                 {
-                    return UncertainResultExtensions.FailWithTrace<string>(
+                    return UncertainResults.FailWithTrace<string>(
                         $"Failed because {nameof(HttpResponseMessage)} was null.");
                 }
 
@@ -38,19 +38,19 @@ namespace Mochineko.Relent.UncertainResult.Tests
                 {
                     if (responseMessage.Content == null)
                     {
-                        return UncertainResultExtensions.FailWithTrace<string>(
+                        return UncertainResults.FailWithTrace<string>(
                             $"Failed because {nameof(HttpResponseMessage.Content)} was null.");
                     }
 
                     var responseText = await responseMessage.Content.ReadAsStringAsync();
                     if (responseText == null)
                     {
-                        return UncertainResultExtensions.FailWithTrace<string>(
+                        return UncertainResults.FailWithTrace<string>(
                             $"Failed because response text was null.");
                     }
 
                     // Success
-                    return UncertainResultFactory.Succeed(responseText);
+                    return UncertainResults.Succeed(responseText);
                 }
                 // Retryable
                 else if (responseMessage.StatusCode is HttpStatusCode.TooManyRequests
@@ -58,13 +58,13 @@ namespace Mochineko.Relent.UncertainResult.Tests
                 {
                     Debug.LogWarning(
                         $"Retryable because the API returned status code:({(int)responseMessage.StatusCode}){responseMessage.StatusCode}.");
-                    return UncertainResultExtensions.RetryWithTrace<string>(
+                    return UncertainResults.RetryWithTrace<string>(
                         $"Retryable because the API returned status code:({(int)responseMessage.StatusCode}){responseMessage.StatusCode}.");
                 }
                 // Response error
                 else
                 {
-                    return UncertainResultExtensions.FailWithTrace<string>(
+                    return UncertainResults.FailWithTrace<string>(
                         $"Failed because the API returned status code:({(int)responseMessage.StatusCode}){responseMessage.StatusCode}."
                     );
                 }
@@ -74,7 +74,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
             {
                 Debug.LogWarning(
                     $"Retryable because {nameof(HttpRequestException)} was thrown during calling the API:{exception}.");
-                return UncertainResultExtensions.RetryWithTrace<string>(
+                return UncertainResults.RetryWithTrace<string>(
                     $"Retryable because {nameof(HttpRequestException)} was thrown during calling the API:{exception}.");
             }
             // Task cancellation
@@ -83,7 +83,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
             {
                 Debug.LogWarning(
                     $"Failed because task was canceled by user during call to the API:{exception}.");
-                return UncertainResultExtensions.RetryWithTrace<string>(
+                return UncertainResults.RetryWithTrace<string>(
                     $"Failed because task was canceled by user during call to the API:{exception}.");
             }
             // Operation cancellation 
@@ -91,7 +91,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
             {
                 Debug.LogWarning(
                     $"Retryable because operation was cancelled during calling the API:{exception}.");
-                return UncertainResultExtensions.RetryWithTrace<string>(
+                return UncertainResults.RetryWithTrace<string>(
                     $"Retryable because operation was cancelled during calling the API:{exception}.");
             }
             // Unhandled error
@@ -99,7 +99,7 @@ namespace Mochineko.Relent.UncertainResult.Tests
             {
                 Debug.LogError(
                     $"Failed because an unhandled exception was thrown when calling the API:{exception}.");
-                return UncertainResultExtensions.FailWithTrace<string>(
+                return UncertainResults.FailWithTrace<string>(
                     $"Failed because an unhandled exception was thrown when calling the API:{exception}.");
             }
         }

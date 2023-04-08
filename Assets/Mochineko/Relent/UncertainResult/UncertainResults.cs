@@ -4,7 +4,7 @@ namespace Mochineko.Relent.UncertainResult
     /// <summary>
     /// A factory of <see cref="IUncertainResult"/> and <see cref="IUncertainResult{TResult}"/>.
     /// </summary>
-    public static class UncertainResultFactory
+    public static class UncertainResults
     {
         /// <summary>
         /// Creates a <see cref="IUncertainSuccessResult"/>.
@@ -21,6 +21,9 @@ namespace Mochineko.Relent.UncertainResult
         public static IUncertainRetryableResult Retry(string message)
             => new UncertainRetryableResult(message);
 
+        public static IUncertainTraceRetryableResult RetryWithTrace(string message)
+            => new UncertainTraceRetryableResult(message);
+
         /// <summary>
         /// Creates a <see cref="IUncertainFailureResult"/> with a message.
         /// </summary>
@@ -28,6 +31,9 @@ namespace Mochineko.Relent.UncertainResult
         /// <returns></returns>
         public static IUncertainFailureResult Fail(string message)
             => new UncertainFailureResult(message);
+
+        public static IUncertainTraceFailureResult FailWithTrace(string message)
+            => new UncertainTraceFailureResult(message);
 
         /// <summary>
         /// Creates a <see cref="IUncertainSuccessResult{TResult}"/> with a value.
@@ -47,6 +53,9 @@ namespace Mochineko.Relent.UncertainResult
         public static IUncertainRetryableResult<TResult> Retry<TResult>(string message)
             => new UncertainRetryableResult<TResult>(message);
 
+        public static IUncertainTraceRetryableResult<TResult> RetryWithTrace<TResult>(string message)
+            => new UncertainTraceRetryableResult<TResult>(message);
+
         /// <summary>
         /// Creates a <see cref="IUncertainFailureResult{TResult}"/> with a message.
         /// </summary>
@@ -55,5 +64,8 @@ namespace Mochineko.Relent.UncertainResult
         /// <returns></returns>
         public static IUncertainFailureResult<TResult> Fail<TResult>(string message)
             => new UncertainFailureResult<TResult>(message);
+
+        public static IUncertainTraceFailureResult<TResult> FailWithTrace<TResult>(string message)
+            => new UncertainTraceFailureResult<TResult>(message);
     }
 }

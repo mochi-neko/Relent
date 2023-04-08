@@ -27,24 +27,8 @@ namespace Mochineko.Relent.UncertainResult.Tests
                 new MockedHttpMessageHandler(responseMessage));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                // Happy path
-                success.Result.Should().Be("Hello, world!");
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                throw new Exception();
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Success.Should().BeTrue();
+            result.Unwrap().Should().Be("Hello, world!");
         }
 
         [Test]
@@ -63,25 +47,10 @@ namespace Mochineko.Relent.UncertainResult.Tests
             timeoutCancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(0.1d));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, timeoutCancellationTokenSource.Token);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                retryable.Message.Should()
-                    .StartWith(
-                        "Retryable because operation was cancelled during calling the API:System.Threading.Tasks.TaskCanceledException: A task was canceled.");
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                throw new Exception();
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Retryable.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith(
+                    "Retryable because operation was cancelled during calling the API:System.Threading.Tasks.TaskCanceledException: A task was canceled.");
         }
 
         [Test]
@@ -104,24 +73,9 @@ namespace Mochineko.Relent.UncertainResult.Tests
             cancellationTokenSource.Cancel();
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, cancellationTokenSource.Token);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                retryable.Message.Should()
-                    .StartWith("Retryable because operation was cancelled before calling the API.");
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                throw new Exception();
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Retryable.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith("Retryable because operation was cancelled before calling the API.");
         }
 
         [TestCase(HttpStatusCode.TooManyRequests)]
@@ -138,24 +92,9 @@ namespace Mochineko.Relent.UncertainResult.Tests
             using var httpClient = new HttpClient(new MockedHttpMessageHandler(responseMessage));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                retryable.Message.Should()
-                    .Be($"Retryable because the API returned status code:({(int)statusCode}){statusCode}.");
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                throw new Exception();
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Retryable.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith($"Retryable because the API returned status code:({(int)statusCode}){statusCode}.");
         }
 
         [Test]
@@ -167,24 +106,9 @@ namespace Mochineko.Relent.UncertainResult.Tests
                     => throw new HttpRequestException()));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                retryable.Message.Should().StartWith(
-                    "Retryable because HttpRequestException was thrown during calling the API:");
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                throw new Exception();
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Retryable.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith("Retryable because HttpRequestException was thrown during calling the API:");
         }
 
         [TestCase(HttpStatusCode.BadRequest)]
@@ -201,24 +125,9 @@ namespace Mochineko.Relent.UncertainResult.Tests
             using var httpClient = new HttpClient(new MockedHttpMessageHandler(responseMessage));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                failure.Message.Should()
-                    .Be($"Failed because the API returned status code:({(int)statusCode}){statusCode}.");
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Failure.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith($"Failed because the API returned status code:({(int)statusCode}){statusCode}.");
         }
 
         [Test]
@@ -232,24 +141,9 @@ namespace Mochineko.Relent.UncertainResult.Tests
                     => throw new Exception()));
 
             var result = await MockWebAPI.GetAsync(httpClient, DummyUrl, CancellationToken.None);
-            if (result is IUncertainSuccessResult<string> success)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainRetryableResult<string> retryable)
-            {
-                throw new Exception();
-            }
-            else if (result is IUncertainFailureResult<string> failure)
-            {
-                failure.Message.Should()
-                    .StartWith($"Failed because an unhandled exception was thrown when calling the API:");
-            }
-            else
-            {
-                // Unexpected
-                throw new UncertainResultPatternMatchException(nameof(result));
-            }
+            result.Failure.Should().BeTrue();
+            result.ExtractMessage().Should()
+                .StartWith($"Failed because an unhandled exception was thrown when calling the API:");
         }
     }
 }

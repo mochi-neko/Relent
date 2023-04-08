@@ -4,7 +4,7 @@ namespace Mochineko.Relent.Result
     /// <summary>
     /// A factory of <see cref="IResult"/> and <see cref="IResult{TResult}"/>.
     /// </summary>
-    public static class ResultFactory
+    public static class Results
     {
         /// <summary>
         /// Creates a <see cref="ISuccessResult"/>.
@@ -20,6 +20,10 @@ namespace Mochineko.Relent.Result
         /// <returns></returns>
         public static IFailureResult Fail(string message)
             => new FailureResult(message);
+        
+        public static IFailureTraceResult FailWithTrace(
+            string message)
+            => new FailureTraceResult(message);
 
         /// <summary>
         /// Creates a <see cref="ISuccessResult{TResult}"/> with a value.
@@ -38,5 +42,9 @@ namespace Mochineko.Relent.Result
         /// <returns></returns>
         public static IFailureResult<TResult> Fail<TResult>(string message)
             => new FailureResult<TResult>(message);
+
+        public static IFailureTraceResult<TResult> FailWithTrace<TResult>(
+            string message)
+            => new FailureTraceResult<TResult>(message);
     }
 }

@@ -25,7 +25,7 @@ namespace Mochineko.Relent.Resilience.Bulkhead
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace(
+                return UncertainResults.RetryWithTrace(
                     $"Cancelled before bulkhead because of {nameof(cancellationToken)} is cancelled.");
             }
 
@@ -45,12 +45,12 @@ namespace Mochineko.Relent.Resilience.Bulkhead
                         IUncertainTraceRetryableResult traceRetryable =>
                             traceRetryable.Trace($"Retryable at bulkhead."),
 
-                        IUncertainRetryableResult retryable => UncertainResultExtensions.RetryWithTrace(
+                        IUncertainRetryableResult retryable => UncertainResults.RetryWithTrace(
                             $"Retryable at bulkhead because -> {retryable.Message}."),
 
                         IUncertainTraceFailureResult traceFailure => traceFailure.Trace($"Failed at bulkhead."),
 
-                        IUncertainFailureResult failure => UncertainResultFactory.Fail(
+                        IUncertainFailureResult failure => UncertainResults.Fail(
                             $"Failed at bulkhead because -> {failure.Message}."),
 
                         _ => throw new UncertainResultPatternMatchException(nameof(result))
@@ -89,7 +89,7 @@ namespace Mochineko.Relent.Resilience.Bulkhead
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return UncertainResultExtensions.RetryWithTrace<TResult>(
+                return UncertainResults.RetryWithTrace<TResult>(
                     $"Cancelled before bulkhead because of {nameof(cancellationToken)} is cancelled.");
             }
 
@@ -111,14 +111,14 @@ namespace Mochineko.Relent.Resilience.Bulkhead
                             return traceRetryable.Trace($"Retryable at bulkhead.");
 
                         case IUncertainRetryableResult<TResult> retryable:
-                            return UncertainResultFactory.Retry<TResult>(
+                            return UncertainResults.Retry<TResult>(
                                 $"Retryable at bulkhead because -> {retryable.Message}.");
 
                         case IUncertainTraceFailureResult<TResult> traceFailure:
                             return traceFailure.Trace($"Failed at bulkhead.");
 
                         case IUncertainFailureResult<TResult> failure:
-                            return UncertainResultFactory.Fail<TResult>(
+                            return UncertainResults.Fail<TResult>(
                                 $"Failed at bulkhead because -> {failure.Message}.");
 
                         default:
@@ -129,7 +129,7 @@ namespace Mochineko.Relent.Resilience.Bulkhead
 
                 case IUncertainTraceRetryableResult waitRetryable:
                     semaphoreSlim.Release();
-                    return UncertainResultFactory.Retry<TResult>(
+                    return UncertainResults.Retry<TResult>(
                         $"Cancelled in bulkhead waiting because -> {waitRetryable.Message}.");
 
                 default:

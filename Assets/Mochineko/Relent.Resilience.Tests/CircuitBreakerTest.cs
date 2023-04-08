@@ -156,7 +156,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             return await policy.ExecuteAsync(
                 execute: _ => Task.FromResult<IUncertainResult>(
-                    UncertainResultExtensions.RetryWithTrace("Force retry")),
+                    UncertainResults.RetryWithTrace("Force retry")),
                 cancellationToken: CancellationToken.None);
         }
 
@@ -165,7 +165,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             return await policy.ExecuteAsync(
                 execute: _ => Task.FromResult<IUncertainResult<TResult>>(
-                    UncertainResultExtensions.RetryWithTrace<TResult>("Force retry")),
+                    UncertainResults.RetryWithTrace<TResult>("Force retry")),
                 cancellationToken: CancellationToken.None);
         }
 
@@ -174,7 +174,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             return await policy.ExecuteAsync(
                 execute: _ => Task.FromResult<IUncertainResult>(
-                    UncertainResultFactory.Succeed()),
+                    UncertainResults.Succeed()),
                 cancellationToken: CancellationToken.None);
         }
 
@@ -184,7 +184,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             return await policy.ExecuteAsync(
                 execute: _ => Task.FromResult<IUncertainResult<TResult>>(
-                    UncertainResultFactory.Succeed(resultValue)),
+                    UncertainResults.Succeed(resultValue)),
                 cancellationToken: CancellationToken.None);
         }
     }

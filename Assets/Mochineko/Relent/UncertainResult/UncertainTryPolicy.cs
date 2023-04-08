@@ -16,7 +16,7 @@ namespace Mochineko.Relent.UncertainResult
         public IUncertainResult Execute()
         {
             operation.Invoke();
-            return UncertainResultFactory.Succeed();
+            return UncertainResults.Succeed();
         }
     }
 
@@ -33,7 +33,7 @@ namespace Mochineko.Relent.UncertainResult
         public IUncertainResult<TResult> Execute()
         {
             var result = operation.Invoke();
-            return UncertainResultFactory.Succeed(result);
+            return UncertainResults.Succeed(result);
         }
     }
 }
