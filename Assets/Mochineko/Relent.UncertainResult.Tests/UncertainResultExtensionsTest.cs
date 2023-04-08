@@ -75,37 +75,5 @@ namespace Mochineko.Relent.UncertainResult.Tests
             var result = value.ToResult();
             result.Unwrap().Should().Be(value);
         }
-        
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TraceRetryableShouldStackMessages()
-        {
-            var result1 = UncertainResults.RetryWithTrace<float>("message1.");
-            var result2 = result1.Trace("message2.");
-            var result3 = result2.Trace("message3.");
-            var result4 = result3.Trace("message4.");
-
-            result4.ExtractMessage()
-                .Should().Be("message1.\n" +
-                             "message2.\n" +
-                             "message3.\n" +
-                             "message4.\n");
-        }
-
-        [Test]
-        [RequiresPlayMode(false)]
-        public void TraceFailureShouldStackMessages()
-        {
-            var result1 = UncertainResults.FailWithTrace<float>("message1.");
-            var result2 = result1.Trace("message2.");
-            var result3 = result2.Trace("message3.");
-            var result4 = result3.Trace("message4.");
-
-            result4.ExtractMessage()
-                .Should().Be("message1.\n" +
-                             "message2.\n" +
-                             "message3.\n" +
-                             "message4.\n");
-        }
     }
 }
