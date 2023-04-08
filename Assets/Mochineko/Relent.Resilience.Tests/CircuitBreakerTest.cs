@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using FluentAssertions;
 using Mochineko.Relent.Resilience.CircuitBreaker;
 using Mochineko.Relent.UncertainResult;
@@ -155,7 +156,7 @@ namespace Mochineko.Relent.Resilience.Tests
             ICircuitBreakerPolicy policy)
         {
             return await policy.ExecuteAsync(
-                execute: _ => Task.FromResult<IUncertainResult>(
+                execute: _ => UniTask.FromResult<IUncertainResult>(
                     UncertainResults.RetryWithTrace("Force retry")),
                 cancellationToken: CancellationToken.None);
         }
@@ -164,7 +165,7 @@ namespace Mochineko.Relent.Resilience.Tests
             ICircuitBreakerPolicy<TResult> policy)
         {
             return await policy.ExecuteAsync(
-                execute: _ => Task.FromResult<IUncertainResult<TResult>>(
+                execute: _ => UniTask.FromResult<IUncertainResult<TResult>>(
                     UncertainResults.RetryWithTrace<TResult>("Force retry")),
                 cancellationToken: CancellationToken.None);
         }
@@ -173,7 +174,7 @@ namespace Mochineko.Relent.Resilience.Tests
             ICircuitBreakerPolicy policy)
         {
             return await policy.ExecuteAsync(
-                execute: _ => Task.FromResult<IUncertainResult>(
+                execute: _ => UniTask.FromResult<IUncertainResult>(
                     UncertainResults.Succeed()),
                 cancellationToken: CancellationToken.None);
         }
@@ -183,7 +184,7 @@ namespace Mochineko.Relent.Resilience.Tests
             TResult resultValue)
         {
             return await policy.ExecuteAsync(
-                execute: _ => Task.FromResult<IUncertainResult<TResult>>(
+                execute: _ => UniTask.FromResult<IUncertainResult<TResult>>(
                     UncertainResults.Succeed(resultValue)),
                 cancellationToken: CancellationToken.None);
         }

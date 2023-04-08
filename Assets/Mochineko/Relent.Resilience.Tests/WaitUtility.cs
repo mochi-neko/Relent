@@ -2,19 +2,20 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Mochineko.Relent.UncertainResult;
 
 namespace Mochineko.Relent.Resilience.Tests
 {
     internal static class WaitUtility
     {
-        public static async Task<IUncertainResult> WaitAndSucceed(
+        public static async UniTask<IUncertainResult> WaitAndSucceed(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(waitTime, cancellationToken);
+                await UniTask.Delay(waitTime, cancellationToken: cancellationToken);
 
                 return UncertainResults.Succeed();
             }
@@ -24,15 +25,15 @@ namespace Mochineko.Relent.Resilience.Tests
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
-        
-        public static async Task<IUncertainResult<TResult>> WaitAndSucceed<TResult>(
+
+        public static async UniTask<IUncertainResult<TResult>> WaitAndSucceed<TResult>(
             TimeSpan waitTime,
             CancellationToken cancellationToken,
             TResult successResult)
         {
             try
             {
-                await Task.Delay(waitTime, cancellationToken);
+                await UniTask.Delay(waitTime, cancellationToken: cancellationToken);
 
                 return UncertainResults.Succeed(successResult);
             }
@@ -42,14 +43,14 @@ namespace Mochineko.Relent.Resilience.Tests
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
-        
-        public static async Task<IUncertainResult> WaitAndRetry(
+
+        public static async UniTask<IUncertainResult> WaitAndRetry(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(waitTime, cancellationToken);
+                await UniTask.Delay(waitTime, cancellationToken: cancellationToken);
 
                 return UncertainResults.Retry(
                     "Retryable after wait.");
@@ -60,14 +61,14 @@ namespace Mochineko.Relent.Resilience.Tests
                     $"Cancelled to wait because operation was cancelled with exception:{exception}.");
             }
         }
-        
-        public static async Task<IUncertainResult<TResult>> WaitAndRetry<TResult>(
+
+        public static async UniTask<IUncertainResult<TResult>> WaitAndRetry<TResult>(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(waitTime, cancellationToken);
+                await UniTask.Delay(waitTime, cancellationToken: cancellationToken);
 
                 return UncertainResults.Retry<TResult>(
                     "Retryable after wait.");

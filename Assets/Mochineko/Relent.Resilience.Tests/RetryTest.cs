@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using FluentAssertions;
 using Mochineko.Relent.Resilience.Retry;
 using Mochineko.Relent.UncertainResult;
@@ -24,8 +25,8 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IRetryPolicy policy = RetryFactory.Retry(maxRetryCount);
 
-            Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
+            UniTask<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var result = await policy.ExecuteAsync(
                 execute: ForceRetry,
@@ -46,8 +47,8 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IRetryPolicy<bool> policy = RetryFactory.Retry<bool>(maxRetryCount);
 
-            Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
+            UniTask<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var result = await policy.ExecuteAsync(
                 execute: ForceRetry,
@@ -70,8 +71,8 @@ namespace Mochineko.Relent.Resilience.Tests
                 maxRetryCount,
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
-            Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
+            UniTask<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -101,8 +102,8 @@ namespace Mochineko.Relent.Resilience.Tests
                 maxRetryCount,
                 interval: TimeSpan.FromSeconds(intervalSeconds));
 
-            Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
+            UniTask<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -132,8 +133,8 @@ namespace Mochineko.Relent.Resilience.Tests
                 factor,
                 baseNumber);
 
-            Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
+            UniTask<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -162,8 +163,8 @@ namespace Mochineko.Relent.Resilience.Tests
                 factor,
                 baseNumber);
 
-            Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
+            UniTask<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -200,8 +201,8 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IRetryPolicy policy = RetryFactory.RetryWithJitter(maxRetryCount, minimum, maximum);
 
-            Task<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
+            UniTask<IUncertainResult> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult>(UncertainResults.RetryWithTrace("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();
@@ -227,8 +228,8 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IRetryPolicy<bool> policy = RetryFactory.RetryWithJitter<bool>(maxRetryCount, minimum, maximum);
 
-            Task<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
-                => Task.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
+            UniTask<IUncertainResult<bool>> ForceRetry(CancellationToken cancellationToken)
+                => UniTask.FromResult<IUncertainResult<bool>>(UncertainResults.RetryWithTrace<bool>("Force retry."));
 
             var stopWatch = new System.Diagnostics.Stopwatch();
             stopWatch.Start();

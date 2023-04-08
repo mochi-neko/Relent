@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Mochineko.Relent.UncertainResult;
 
 namespace Mochineko.Relent.Resilience
@@ -17,7 +18,7 @@ namespace Mochineko.Relent.Resilience
         /// <param name="waitTime"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<IUncertainResult> WaitAsync(
+        public static async UniTask<IUncertainResult> WaitAsync(
             TimeSpan waitTime,
             CancellationToken cancellationToken)
         {
@@ -26,10 +27,10 @@ namespace Mochineko.Relent.Resilience
                 return UncertainResults.RetryWithTrace(
                     $"Operation has been already cancelled.");
             }
-            
+
             try
             {
-                await Task.Delay(waitTime, cancellationToken);
+                await UniTask.Delay(waitTime, cancellationToken: cancellationToken);
 
                 return UncertainResults.Succeed();
             }
@@ -46,7 +47,7 @@ namespace Mochineko.Relent.Resilience
         /// <param name="semaphoreSlim"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<IUncertainResult> WaitAsync(
+        public static async UniTask<IUncertainResult> WaitAsync(
             SemaphoreSlim semaphoreSlim,
             CancellationToken cancellationToken)
         {
@@ -55,7 +56,7 @@ namespace Mochineko.Relent.Resilience
                 return UncertainResults.RetryWithTrace(
                     $"Operation has been already cancelled.");
             }
-            
+
             try
             {
                 await semaphoreSlim.WaitAsync(cancellationToken);

@@ -3,11 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using FluentAssertions;
 using Mochineko.Relent.Resilience.Bulkhead;
 using Mochineko.Relent.UncertainResult;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+#pragma warning disable CS0618
+#pragma warning disable CS4014
 
 namespace Mochineko.Relent.Resilience.Tests
 {
@@ -23,7 +26,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IBulkheadPolicy policy = BulkheadFactory.Bulkhead(maxParallelization);
 
-            var taskList = new List<Task<IUncertainResult>>();
+            var taskList = new List<UniTask<IUncertainResult>>();
             for (var i = 0; i < maxParallelization + 1; i++)
             {
                 var task = policy.ExecuteAsync(
@@ -33,30 +36,25 @@ namespace Mochineko.Relent.Resilience.Tests
                     cancellationToken: CancellationToken.None);
 
                 taskList.Add(task);
-
-                // Does not wait to complete.
-#pragma warning disable CS4014
-                Task.Run(() => task.ConfigureAwait(false));
-#pragma warning restore CS4014
             }
 
             policy.RemainingParallelizationCount.Should().Be(0,
                 because: "Bulkhead is fulfilled.");
 
-            await Task.Delay(TimeSpan.FromSeconds(0.11d));
+            await UniTask.Delay(TimeSpan.FromSeconds(0.11d));
 
             policy.RemainingParallelizationCount.Should().Be(maxParallelization - 1);
 
             for (var i = 0; i < maxParallelization; i++)
             {
-                taskList[i].Status.Should().Be(TaskStatus.RanToCompletion);
+                taskList[i].Status.Should().Be(UniTaskStatus.Succeeded);
             }
 
-            taskList[maxParallelization].Status.Should().Be(TaskStatus.WaitingForActivation);
+            taskList[maxParallelization].Status.Should().Be(UniTaskStatus.Pending);
 
-            await Task.Delay(TimeSpan.FromSeconds(1d));
+            await UniTask.Delay(TimeSpan.FromSeconds(1d));
 
-            taskList[maxParallelization].Status.Should().Be(TaskStatus.RanToCompletion);
+            taskList[maxParallelization].Status.Should().Be(UniTaskStatus.Succeeded);
         }
 
         [TestCase(1)]
@@ -68,7 +66,7 @@ namespace Mochineko.Relent.Resilience.Tests
         {
             IBulkheadPolicy<int> policy = BulkheadFactory.Bulkhead<int>(maxParallelization);
 
-            var taskList = new List<Task<IUncertainResult<int>>>();
+            var taskList = new List<UniTask<IUncertainResult<int>>>();
             for (var i = 0; i < maxParallelization + 1; i++)
             {
                 var task = policy.ExecuteAsync(
@@ -79,30 +77,25 @@ namespace Mochineko.Relent.Resilience.Tests
                     cancellationToken: CancellationToken.None);
 
                 taskList.Add(task);
-
-                // Does not wait to complete.
-#pragma warning disable CS4014
-                Task.Run(() => task.ConfigureAwait(false));
-#pragma warning restore CS4014
             }
 
             policy.RemainingParallelizationCount.Should().Be(0,
                 because: "Bulkhead is fulfilled.");
 
-            await Task.Delay(TimeSpan.FromSeconds(0.11d));
+            await UniTask.Delay(TimeSpan.FromSeconds(0.11d));
 
             policy.RemainingParallelizationCount.Should().Be(maxParallelization - 1);
 
             for (var i = 0; i < maxParallelization; i++)
             {
-                taskList[i].Status.Should().Be(TaskStatus.RanToCompletion);
+                taskList[i].Status.Should().Be(UniTaskStatus.Succeeded);
             }
 
-            taskList[maxParallelization].Status.Should().Be(TaskStatus.WaitingForActivation);
+            taskList[maxParallelization].Status.Should().Be(UniTaskStatus.Pending);
 
-            await Task.Delay(TimeSpan.FromSeconds(1d));
+            await UniTask.Delay(TimeSpan.FromSeconds(1d));
 
-            taskList[maxParallelization].Status.Should().Be(TaskStatus.RanToCompletion);
+            taskList[maxParallelization].Status.Should().Be(UniTaskStatus.Succeeded);
         }
     }
 }

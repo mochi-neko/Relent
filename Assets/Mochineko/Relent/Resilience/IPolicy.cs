@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Mochineko.Relent.UncertainResult;
 
 namespace Mochineko.Relent.Resilience
@@ -17,8 +18,8 @@ namespace Mochineko.Relent.Resilience
         /// <param name="execute"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IUncertainResult> ExecuteAsync(
-            Func<CancellationToken, Task<IUncertainResult>> execute,
+        UniTask<IUncertainResult> ExecuteAsync(
+            Func<CancellationToken, UniTask<IUncertainResult>> execute,
             CancellationToken cancellationToken);
     }
     
@@ -34,8 +35,8 @@ namespace Mochineko.Relent.Resilience
         /// <param name="execute"></param>
         /// <param name="cancellationToken">Type of result value</param>
         /// <returns></returns>
-        Task<IUncertainResult<TResult>> ExecuteAsync(
-            Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
+        UniTask<IUncertainResult<TResult>> ExecuteAsync(
+            Func<CancellationToken, UniTask<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken);
     }
 }

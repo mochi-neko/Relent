@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Mochineko.Relent.UncertainResult;
 
 namespace Mochineko.Relent.Resilience.Timeout
@@ -16,8 +17,8 @@ namespace Mochineko.Relent.Resilience.Timeout
             this.timeout = timeout;
         }
 
-        public async Task<IUncertainResult> ExecuteAsync(
-            Func<CancellationToken, Task<IUncertainResult>> execute,
+        public async UniTask<IUncertainResult> ExecuteAsync(
+            Func<CancellationToken, UniTask<IUncertainResult>> execute,
             CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -73,8 +74,8 @@ namespace Mochineko.Relent.Resilience.Timeout
             this.timeout = timeout;
         }
 
-        public async Task<IUncertainResult<TResult>> ExecuteAsync(
-            Func<CancellationToken, Task<IUncertainResult<TResult>>> execute,
+        public async UniTask<IUncertainResult<TResult>> ExecuteAsync(
+            Func<CancellationToken, UniTask<IUncertainResult<TResult>>> execute,
             CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
